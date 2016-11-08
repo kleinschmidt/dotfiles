@@ -28,12 +28,9 @@
 
 (add-hook 'ess-mode-hook
           (lambda ()
-            (ess-set-style 'RStudio 'quiet)))
-
-(load "ess-site.el")
-(ess-toggle-underscore nil)
-
-(setq ess-smart-S-assign-key "")
+            (ess-set-style 'RStudio 'quiet)
+            (ess-toggle-underscore t)
+            (ess-toggle-underscore nil)))
 
 ;; Function to switch on adpative-wrap-prefix-mode for visual-line-mode
 ;; when appropriate.
@@ -144,8 +141,7 @@
 (auctex-latexmk-setup)
 
 ;; Manually downloaded matlab mode
-(add-to-list 'load-path "~/code/matlab-emacs")
-(load-library "matlab-load")
+;; (require 'matlab-mode)
 
 ;; wc-mode
 (require 'wc-mode)
@@ -185,7 +181,7 @@
       )
     )
   )
-(global-set-key (kbd "C-;") 'mac-switch-meta)
+(global-set-key (kbd "C-;") 'mac-switch-meta) 
 
 ;; set option to meta by default
 (setq mac-option-modifier 'meta)
@@ -292,7 +288,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 110 :family "Menlo"))))
+ '(default ((t (:height 100 :family "MesloLGS Nerd Font"))))
  '(markdown-comment-face ((t (:foreground "#586e75" :strike-through nil))))
  '(org-level-1 ((t (:inherit default :weight bold :foreground "#839496" :height 1.3))))
  '(org-level-2 ((t (:inherit default :weight bold :foreground "#839496" :height 1.1))))
