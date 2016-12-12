@@ -244,7 +244,7 @@
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-agenda-files
    (quote
-    ("~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
+    ("~/work/notes/projects.org" "~/work/notes/general.org" "~/work/writing/topics-socio-cog/topics.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
@@ -252,7 +252,7 @@
    (quote
     ("/Users/dkleinschmidt/Documents/papers/library-clean.bib")) t)
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
- '(smerge-command-prefix "\"\\C-cv\"" t)
+ '(smerge-command-prefix "\"\\C-cv\"")
  '(term-default-bg-color "#002b36")
  '(term-default-fg-color "#839496")
  '(vc-annotate-background nil)
