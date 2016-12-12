@@ -21,3 +21,6 @@ export LOLCOMMITS_DELAY=1
 
 # git bash completion
 source /usr/share/git/completion/git-completion.bash
+
+# for dotfiles, use `config ...` instead of `git ...`
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
