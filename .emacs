@@ -337,3 +337,37 @@
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cb" 'org-iswitchb)
 (global-set-key "\C-cc" 'org-capture)
+
+;; change font size for current frame
+
+(defconst default-face-height 100)
+
+(defun set-frame-face-height (&optional new-height)
+  "set the :height attribute of the default face for the current frame"
+  (interactive)
+  (if new-height
+      (set-face-attribute 'default (selected-frame) :height new-height)
+    (set-frame-face-height default-face-height))
+)
+
+(defun plus-frame-face-height (height-increment)
+  "Increase default font face :height"
+  (interactive)
+  (set-frame-face-height (+ (face-attribute 'default :height) height-increment)))
+
+(defun inc-frame-face-height (&optional increment)
+  ":height + 10"
+  (interactive)
+  (if increment
+      (plus-frame-face-height increment)
+    (plus-frame-face-height 10)))
+
+(defun dec-frame-face-height (&optional decrement)
+  ":height - 10"
+  (interactive)
+  (if decrement
+      (plus-frame-face-height (- decrement))
+    (plus-frame-face-height -10)))
+
+(global-set-key (kbd "C-c C-=") 'inc-frame-face-height)
+(global-set-key (kbd "C-c C--") 'dec-frame-face-height)
