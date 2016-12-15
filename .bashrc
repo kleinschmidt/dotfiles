@@ -10,9 +10,8 @@ EDITOR=emacs
 alias ls='ls --color=auto -aF'
 PS1='[\u@\h \W]\$ '
 
-# ls colors
-export CLICOLOR=1
-export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+# solarized dircolors
+eval `dircolors /home/dave/.dir_colors/dircolors`
 
 # lolcommits configuration
 export LOLCOMMITS_DELAY=1
@@ -24,3 +23,4 @@ source /usr/share/git/completion/git-completion.bash
 
 # for dotfiles, use `config ...` instead of `git ...`
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+
