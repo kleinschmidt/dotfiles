@@ -24,3 +24,4 @@ source /usr/share/git/completion/git-completion.bash
 # for dotfiles, use `config ...` instead of `git ...`
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
+export PATH="$(ruby -e 'print Gem.user_dir')/bin:$PATH"
