@@ -135,7 +135,8 @@
 
 ;; Default bibliography location:
 (setq reftex-default-bibliography
-      '("/Users/dkleinschmidt/Documents/papers/library_clean.bib"))
+      (list (concat (file-name-as-directory (getenv "HOME"))
+                    "Documents/papers/library-clean.bib")))
 
 ;; Use latexmk with auctex (package installed via MELPA)
 (require 'auctex-latexmk)
@@ -245,12 +246,13 @@
  '(org-agenda-files
    (quote
     ("~/work/notes/projects.org" "~/work/notes/general.org" "~/work/writing/topics-socio-cog/topics.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
+ '(org-directory "~/work/notes")
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
  '(reftex-default-bibliography
    (quote
-    ("/Users/dkleinschmidt/Documents/papers/library-clean.bib")) t)
+    ("/Users/dkleinschmidt/Documents/papers/library-clean.bib")))
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
  '(smerge-command-prefix "\"\\C-cv\"")
  '(term-default-bg-color "#002b36")
