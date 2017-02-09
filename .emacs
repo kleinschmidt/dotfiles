@@ -245,6 +245,7 @@
  '(hl-fg-colors
    (quote
     ("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36")))
+ '(inhibit-startup-screen t)
  '(ispell-program-name "aspell")
  '(js2-include-node-externs t)
  '(magit-diff-use-overlays nil)
@@ -349,6 +350,7 @@
 (global-set-key "\C-cb" 'org-iswitchb)
 (global-set-key "\C-cc" 'org-capture)
 
+;;------------------------------------------------------------------------------
 ;; change font size for current frame
 
 (defconst default-face-height 100)
@@ -382,3 +384,4 @@
 
 (global-set-key (kbd "C-c C-=") 'inc-frame-face-height)
 (global-set-key (kbd "C-c C--") 'dec-frame-face-height)
+
