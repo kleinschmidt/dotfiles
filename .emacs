@@ -255,16 +255,19 @@
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-agenda-files
    (quote
-    ("~/work/notes/projects.org" "~/work/notes/general.org" "~/work/writing/topics-socio-cog/topics.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
+    ("~/code/experiments/animal-similarity/imaging-analysis/pres/writeup/animals.org" "~/work/notes/todo.org" "~/work/reviews/topics-kim-drager/notes.org" "~/work/notes/projects.org" "~/work/notes/general.org" "~/work/writing/topics-socio-cog/topics.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
  '(org-directory "~/work/notes")
+ '(package-selected-packages
+   (quote
+    (auctex stan-mode use-package magithub exec-path-from-shell ack markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
  '(reftex-default-bibliography
    (quote
-    ("/Users/dkleinschmidt/Documents/papers/library-clean.bib")))
+    ("/Users/dkleinschmidt/Documents/papers/library-clean.bib")) t)
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
- '(smerge-command-prefix "\"\\C-cv\"")
+ '(smerge-command-prefix "\"\\C-cv\"" t)
  '(term-default-bg-color "#002b36")
  '(term-default-fg-color "#839496")
  '(vc-annotate-background nil)
