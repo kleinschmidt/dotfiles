@@ -26,12 +26,13 @@
 ;; tabs = evil
 (setq-default indent-tabs-mode nil)
 
-
-(add-hook 'ess-mode-hook
-          (lambda ()
-            (ess-set-style 'RStudio 'quiet)
-            (ess-toggle-underscore t)
-            (ess-toggle-underscore nil)))
+(use-package ess-site
+  :config
+  (add-hook 'ess-mode-hook
+            (lambda ()
+              (ess-set-style 'RStudio 'quiet)
+              (ess-toggle-underscore t)
+              (ess-toggle-underscore nil))))
 
 ;; Function to switch on adpative-wrap-prefix-mode for visual-line-mode
 ;; when appropriate.
@@ -45,12 +46,14 @@
 (add-hook 'markdown-mode-hook 'visual-line-mode)
 
 ;;; markdown mode
-(add-to-list 'load-path "~/code/markdown-mode/")
-(autoload 'markdown-mode "markdown-mode"
-   "Major mode for editing Markdown files" t)
-(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+;; (add-to-list 'load-path "~/code/markdown-mode/")
+;; (autoload 'markdown-mode "markdown-mode"
+;;    "Major mode for editing Markdown files" t)
+(use-package markdown-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
 
 ;; predicate to prevent flyspell checking in code blocks (inline and fenced)
 ;; http://emacs.stackexchange.com/questions/20230/how-to-make-flyspell-ignore-code-blocks-in-markdown
@@ -108,7 +111,13 @@
            (set-window-buffer (next-window) grunt-buffer)))))
 
 ;; Bind magit-status to C-c i
-(global-set-key "\C-ci" 'magit-status)
+(use-package magit
+  :ensure t
+  :bind (("C-c i" . magit-status)))
+
+(use-package magithub
+  :after magit
+  :config (magithub-feature-autoinject t))
 
 ;; AUCTeX fontification
 ;; apacite citation macros
