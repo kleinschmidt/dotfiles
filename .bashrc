@@ -5,7 +5,8 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-EDITOR=emacs
+export EDITOR="emacsclient -t"
+export VISUAL="emacsclient -c -a emacs"
 
 alias ls='ls --color=auto -aF'
 PS1='[\u@\h \W]\$ '
