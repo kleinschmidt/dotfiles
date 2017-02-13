@@ -23,6 +23,22 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
+;; ivy
+(use-package ivy
+  :ensure t
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-height 10)
+  (setq magit-completing-read-function 'ivy-completing-read)
+  (setq ivy-initial-inputs-alist nil)
+  (setq ivy-re-builders-alist
+	;; allow input not in order
+        '((t   . ivy--regex-ignore-order)))
+  :bind (("C-s" . swiper)
+         ("M-x" . counsel-M-x)
+         ("C-k" . counsel-ag)))
+
 ;; tabs = evil
 (setq-default indent-tabs-mode nil)
 
@@ -259,7 +275,7 @@
  '(org-directory "~/work/notes")
  '(package-selected-packages
    (quote
-    (auctex stan-mode use-package magithub exec-path-from-shell ack markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
+    (counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package magithub exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
