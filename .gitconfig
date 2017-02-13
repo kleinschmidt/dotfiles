@@ -2,7 +2,7 @@
 	name = Dave Kleinschmidt
 	email = dave.f.kleinschmidt@gmail.com
 [core]
-	excludesfile = /Users/dkleinschmidt/.gitignore_global
+	excludesfile = ~/.gitignore_global
 	editor = emacs
 [push]
 	default = matching
