@@ -25,3 +25,10 @@ Thumbs.db
 *.rar
 *.tar
 *.zip
+
+# Knitr/rmarkdown generated #
+#############################
+
+*.knit.md
+*.utf8.md
+*_cache/
