@@ -37,7 +37,7 @@
         '((t   . ivy--regex-ignore-order)))
   :bind (("C-s" . swiper)
          ("M-x" . counsel-M-x)
-         ("C-k" . counsel-ag)))
+         ("C-c k" . counsel-ag)))
 
 ;; tabs = evil
 (setq-default indent-tabs-mode nil)
