@@ -331,7 +331,7 @@
  '(markdown-comment-face ((t (:foreground "#586e75" :strike-through nil))))
  '(org-level-1 ((t (:inherit default :weight bold :foreground "#839496" :height 1.3))))
  '(org-level-2 ((t (:inherit default :weight bold :foreground "#839496" :height 1.1))))
- '(org-level-3 ((t (:inherit default :weight bold :foreground "#839496" :height 1))))
+ '(org-level-3 ((t (:inherit default :weight bold :foreground "#839496"))))
  '(org-level-4 ((t (:inherit default :weight bold :foreground "#839496"))))
  '(org-level-5 ((t (:inherit default :weight bold :foreground "#839496"))))
  '(org-level-6 ((t (:inherit default :weight bold :foreground "#839496"))))
@@ -361,7 +361,7 @@
   (custom-theme-set-faces 'user
                           `(org-level-1 ((t (,@headline :height 1.3))))
                           `(org-level-2 ((t (,@headline :height 1.1))))
-                          `(org-level-3 ((t (,@headline :heigth 1))))
+                          `(org-level-3 ((t (,@headline))))
                           `(org-level-4 ((t (,@headline))))
                           `(org-level-5 ((t (,@headline))))
                           `(org-level-6 ((t (,@headline))))
