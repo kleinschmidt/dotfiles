@@ -1,0 +1,14 @@
+[Unit]
+Description=Dropbox (%I)
+After=local-fs.target network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c "%h/.dropbox-%i/.dropbox-dist/dropboxd"
+Environment=HOME=/home/dave/.dropbox-%i/
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
