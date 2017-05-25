@@ -1,5 +1,6 @@
 *~
 .Rhistory
+.juliahistory
 
 # OS generated files #
 ######################
@@ -32,3 +33,14 @@ Thumbs.db
 *.knit.md
 *.utf8.md
 *_cache/
+
+# Latex intermediate files #
+############################
+
+*.aux
+*.bbl
+*.bcf
+*.fdb_latexmk
+*.fls
+*.log
+*.run.xml
