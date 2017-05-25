@@ -26,3 +26,6 @@ source /usr/share/git/completion/git-completion.bash
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
 export PATH="$(ruby -e 'print Gem.user_dir')/bin:$PATH"
+
+# added by Miniconda3 4.3.11 installer
+export PATH="/home/dave/miniconda3/bin:$PATH"
