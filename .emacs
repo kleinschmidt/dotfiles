@@ -36,6 +36,7 @@
 	;; allow input not in order
         '((t   . ivy--regex-ignore-order)))
   :bind (("C-s" . swiper)
+         ("C-S-s" . isearch-forward)
          ("C-r" . swiper)
          ("M-x" . counsel-M-x)
          ("C-c k" . counsel-ag)))
@@ -49,7 +50,15 @@
          ("C-<" . mc/mark-previous-like-this)
          ("C-c C-<" . mc/mark-all-like-this)
          ("C-S-c C-S-c" . mc/edit-lines)))
-  
+
+
+;; pdf-tools
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install)
+  (setq pdf-annot-list-listed-types '(caret file highlight squiggly strike-out text underline unknown))
+  )
   
 
 (use-package ess-site
@@ -285,7 +294,7 @@
  '(org-directory "~/work/notes")
  '(package-selected-packages
    (quote
-    (matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package magithub exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
+    (multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package magithub exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
@@ -411,3 +420,10 @@
 (global-set-key (kbd "C-c C-=") 'inc-frame-face-height)
 (global-set-key (kbd "C-c C--") 'dec-frame-face-height)
 
+;; copy over PATH variable from the shell
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (setq exec-path-from-shell-check-startup-files nil)
+  (exec-path-from-shell-initialize))
