@@ -16,7 +16,7 @@ eval `dircolors /home/dave/.dir_colors/dircolors`
 
 # lolcommits configuration
 export LOLCOMMITS_DELAY=1
-# export LOLCOMMITS_FORK=1
+export LOLCOMMITS_FORK=1
 # export LOLCOMMITS_STEALTH=1
 
 # git bash completion
