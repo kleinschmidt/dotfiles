@@ -58,7 +58,8 @@
   :config
   (pdf-tools-install)
   (setq pdf-annot-list-listed-types '(caret file highlight squiggly strike-out text underline unknown))
-  )
+  :bind (("C-s" . isearch-forward)
+         ("C-r" . isearch-backward)))
   
 
 (use-package ess-site
