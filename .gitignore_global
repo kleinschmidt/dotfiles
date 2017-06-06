@@ -2,6 +2,12 @@
 .Rhistory
 .juliahistory
 
+# Binary blobs #
+################
+*.pdf
+*.doc
+*.docx
+
 # OS generated files #
 ######################
 Icon*
@@ -33,6 +39,7 @@ Thumbs.db
 *.knit.md
 *.utf8.md
 *_cache/
+*_files/
 
 # Latex intermediate files #
 ############################
