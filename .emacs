@@ -16,6 +16,9 @@
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
 
+;; local ~/emacs.d/lisp/
+(let ((default-directory "~/.emacs.d/lisp/"))
+  (normal-top-level-add-subdirs-to-load-path))
 
 ;; melpa 
 (require 'package)
@@ -55,13 +58,15 @@
 ;; pdf-tools
 (use-package pdf-tools
   :ensure t
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :config
   (pdf-tools-install)
   (setq pdf-annot-list-listed-types '(caret file highlight squiggly strike-out text underline unknown))
-  :bind (("C-s" . isearch-forward)
-         ("C-r" . isearch-backward)))
-  
+  :bind (:map pdf-view-mode-map
+              ("C-s" . isearch-forward)
+              ("C-r" . isearch-backward)))
 
+;; ess
 (use-package ess-site
   :config
   (add-hook 'ess-mode-hook
@@ -69,6 +74,17 @@
               (ess-set-style 'RStudio 'quiet)
               (ess-toggle-underscore t)
               (ess-toggle-underscore nil))))
+
+;; julia mode
+(use-package julia-mode
+  :init
+  ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
+  ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
+  (setq auto-mode-alist (rassq-delete-all 'julia-mode auto-mode-alist))
+  :mode "\\.jl\\'"
+  :config
+  (use-package julia-repl)
+  (add-hook 'julia-mode-hook 'julia-repl-mode))
 
 ;; Function to switch on adpative-wrap-prefix-mode for visual-line-mode
 ;; when appropriate.
