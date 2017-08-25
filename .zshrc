@@ -28,6 +28,8 @@ export PATH="/home/dave/miniconda3/bin:$PATH"
 export EDITOR="emacsclient -t"
 export VISUAL="emacsclient -c -a emacs"
 
+export PATH="/home/dave/bin/:$PATH"
+
 # OH MY ZSH
 
 # If you come from bash you might have to change your $PATH.
