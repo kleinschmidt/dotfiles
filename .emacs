@@ -26,6 +26,11 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
+;; expand-region
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+
 ;; ivy
 (use-package ivy
   :ensure t
@@ -95,8 +100,6 @@
     (adaptive-wrap-prefix-mode (if visual-line-mode 1 -1)))
   (add-hook 'visual-line-mode-hook 'my-activate-adaptive-wrap-prefix-mode))
 
-(add-hook 'markdown-mode-hook 'visual-line-mode)
-
 ;;; markdown mode
 ;; (add-to-list 'load-path "~/code/markdown-mode/")
 ;; (autoload 'markdown-mode "markdown-mode"
@@ -105,7 +108,8 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+  (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
 ;; predicate to prevent flyspell checking in code blocks (inline and fenced)
 ;; http://emacs.stackexchange.com/questions/20230/how-to-make-flyspell-ignore-code-blocks-in-markdown
@@ -227,6 +231,9 @@
 (require 'poly-markdown)
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
+;; poly-markdown-mode auto-detects chunk types.
+(add-to-list 'auto-mode-alist '("\\.jmd\\'" . poly-markdown-mode))
+
 ;; mac switch meta key
 (defun mac-switch-meta nil 
   "switch meta between Option and Command"
@@ -300,6 +307,7 @@
  '(inhibit-startup-screen t)
  '(ispell-program-name "aspell")
  '(js2-include-node-externs t)
+ '(julia-repl-executable "julia-jb-namedtuples")
  '(magit-diff-use-overlays nil)
  '(markdown-enable-math t)
  '(nrepl-message-colors
@@ -307,11 +315,11 @@
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-agenda-files
    (quote
-    ("~/code/experiments/animal-similarity/imaging-analysis/pres/writeup/animals.org" "~/work/notes/todo.org" "~/work/notes/projects.org" "~/work/notes/general.org" "~/work/writing/topics-socio-cog/topics.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
+    ("~/code/experiments/animal-similarity/imaging-analysis/pres/writeup/animals.org" "~/work/notes/todo.org" "~/work/notes/projects.org" "~/work/notes/general.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
  '(org-directory "~/work/notes")
  '(package-selected-packages
    (quote
-    (pdf-tools multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package magithub exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
+    (magithub expand-region pdf-tools multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
@@ -375,32 +383,30 @@
 (put 'downcase-region 'disabled nil)
 
 ;; org mode prettification
-
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-(setq org-hide-emphasis-markers t)
-
-(let* ((base-font-color (face-foreground 'default nil 'default))
-       (headline `(:inherit default :weight bold :foreground ,base-font-color)))
-       
-  (custom-theme-set-faces 'user
-                          `(org-level-1 ((t (,@headline :height 1.3))))
-                          `(org-level-2 ((t (,@headline :height 1.1))))
-                          `(org-level-3 ((t (,@headline))))
-                          `(org-level-4 ((t (,@headline))))
-                          `(org-level-5 ((t (,@headline))))
-                          `(org-level-6 ((t (,@headline))))
-                          `(org-level-7 ((t (,@headline))))
-                          `(org-level-8 ((t (,@headline))))
-                          )
-  )
-
-;; org-mode global key bindings
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-cb" 'org-iswitchb)
-(global-set-key "\C-cc" 'org-capture)
+(use-package org
+  :config
+  (let* ((base-font-color (face-foreground 'default nil 'default))
+         (headline `(:inherit default :weight bold :foreground ,base-font-color)))
+    
+    (custom-theme-set-faces 'user
+                            `(org-level-1 ((t (,@headline :height 1.3))))
+                            `(org-level-2 ((t (,@headline :height 1.1))))
+                            `(org-level-3 ((t (,@headline))))
+                            `(org-level-4 ((t (,@headline))))
+                            `(org-level-5 ((t (,@headline))))
+                            `(org-level-6 ((t (,@headline))))
+                            `(org-level-7 ((t (,@headline))))
+                            `(org-level-8 ((t (,@headline))))
+                            )
+    )
+  (use-package org-bullets)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))  
+  (setq org-hide-emphasis-markers nil)
+  (add-hook 'org-mode-hook 'auto-fill-mode)
+  :bind (("C-c a" . org-agenda)
+         ("C-c l" . org-store-link)
+         ("C-c b" . org-iswitchb)
+         ("C-c c" . org-capture)))
 
 ;;------------------------------------------------------------------------------
 ;; change font size for current frame
