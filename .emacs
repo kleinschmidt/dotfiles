@@ -20,11 +20,18 @@
 (let ((default-directory "~/.emacs.d/lisp/"))
   (normal-top-level-add-subdirs-to-load-path))
 
+;; compile with C-x C-m
+(global-set-key (kbd "C-x C-m") 'compile)
+
 ;; melpa 
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
+
+;; solarized theme
+(use-package solarized-theme
+  :ensure t)
 
 ;; expand-region
 (use-package expand-region
@@ -34,6 +41,8 @@
 ;; ivy
 (use-package ivy
   :ensure t
+  :ensure swiper
+  :ensure counsel
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
@@ -72,7 +81,9 @@
               ("C-r" . isearch-backward)))
 
 ;; ess
-(use-package ess-site
+(use-package ess
+  :ensure t
+  :ensure stan-mode
   :config
   (add-hook 'ess-mode-hook
             (lambda ()
@@ -82,6 +93,7 @@
 
 ;; julia mode
 (use-package julia-mode
+  :ensure t
   :init
   ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
   ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
@@ -101,57 +113,40 @@
   (add-hook 'visual-line-mode-hook 'my-activate-adaptive-wrap-prefix-mode))
 
 ;;; markdown mode
-;; (add-to-list 'load-path "~/code/markdown-mode/")
-;; (autoload 'markdown-mode "markdown-mode"
-;;    "Major mode for editing Markdown files" t)
 (use-package markdown-mode
+  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-  (add-hook 'markdown-mode-hook 'auto-fill-mode))
-
-;; predicate to prevent flyspell checking in code blocks (inline and fenced)
-;; http://emacs.stackexchange.com/questions/20230/how-to-make-flyspell-ignore-code-blocks-in-markdown
-(defun markdown-mode-flyspell-verify ()
-  "Used for `flyspell-generic-check-word-predicate' in text modes."
-  ;; (point) is next character after the word, need to check 1 back
-  (let ((f (get-text-property (- (point) 1) 'face)))
-    (not (memq f '(markdown-pre-face
-                   markdown-inline-code-face
-                   markdown-language-keyword-face)))))
-
-(put 'markdown-mode 'flyspell-mode-predicate 'markdown-mode-flyspell-verify)
-
-;; reftex in markdown mode
-(defvar markdown-cite-format)
-(setq markdown-cite-format
-      '(
-        (?\C-m . "[@%l]")
-        (?p . "[@%l]")
-        (?t . "@%l")
-        )
-      )
-
-(defun markdown-reftex-citation ()
-  (interactive)
-  (let ((reftex-cite-format markdown-cite-format)
-        (reftex-cite-key-separator "; @"))
-    (reftex-citation)))
-
-(add-hook
- 'markdown-mode-hook
- (lambda ()
-   (define-key markdown-mode-map "\C-c[" 'markdown-reftex-citation)))
-
-;; Run grunt on C-c g in js2-mode
-(defun bind-grunt-key ()
-  "Bind C-c g to run grunt"
-  (local-set-key "\C-cg" 'grunt))
-(add-hook 'js2-mode-hook 'bind-grunt-key)
-(add-hook 'js-mode 'bind-grunt-key)
-
-(setq grunt-cmd "grunt --no-color")
+  (add-hook 'markdown-mode-hook 'auto-fill-mode)
+  ;; predicate to prevent flyspell checking in code blocks (inline and
+  ;; fenced)
+  ;; http://emacs.stackexchange.com/questions/20230/how-to-make-flyspell-ignore-code-blocks-in-markdown
+  (defun markdown-mode-flyspell-verify ()
+    "Used for `flyspell-generic-check-word-predicate' in text modes."
+    ;; (point) is next character after the word, need to check 1 back
+    (let ((f (get-text-property (- (point) 1) 'face)))
+      (not (memq f '(markdown-pre-face
+		     markdown-inline-code-face
+		     markdown-language-keyword-face)))))
+  (put 'markdown-mode 'flyspell-mode-predicate 'markdown-mode-flyspell-verify)
+  ;; reftex in markdown mode
+  (defvar markdown-cite-format)
+  (setq markdown-cite-format
+	'(
+	  (?\C-m . "[@%l]")
+	  (?p . "[@%l]")
+	  (?t . "@%l")
+	  )
+	)
+  (defun markdown-reftex-citation ()
+    (interactive)
+    (let ((reftex-cite-format markdown-cite-format)
+	  (reftex-cite-key-separator "; @"))
+      (reftex-citation)))
+  :bind (:map markdown-mode-map
+	 ("C-c [" . reftex-citation)))
 
 (defun grunt ()
   "Run grunt"
@@ -165,6 +160,17 @@
            (message nil)
            (split-window-vertically)
            (set-window-buffer (next-window) grunt-buffer)))))
+
+(setq grunt-cmd "grunt --no-color")
+
+;; disable electric indent in js2-mode, and make default for .js
+(use-package js2-mode
+  :ensure t
+  :mode "\\.js?\\'"
+  :bind (:map js2-mode-map
+	 ("C-c g" . grunt)))
+;; (add-hook 'js2-mode-hook (lambda () (electric-indent-local-mode -1)))
+
 
 ;; Bind magit-status to C-c i
 (use-package magit
@@ -204,35 +210,39 @@
                     "Documents/papers/library-clean.bib")))
 
 ;; Use latexmk with auctex (package installed via MELPA)
-(require 'auctex-latexmk)
-(auctex-latexmk-setup)
+(use-package auctex-latexmk
+  :ensure t
+  :config
+  (auctex-latexmk-setup))
 
 ;; Manually downloaded matlab mode
 ;; (require 'matlab-mode)
 
 ;; wc-mode
-(require 'wc-mode)
+(use-package wc-mode
+  :ensure t)
 
 
 ;; web-mode/swig
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.swig\\'" . web-mode))
-(setq web-mode-engines-alist
-      '(("django" . "\\.html?\\'"))
-)
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html?\\'" 
+	 "\\.swig\\'")
+  :config
+  (setq web-mode-engines-alist
+	'(("django" . "\\.html?\\'"))))
 
-;; disable electric indent in js2-mode, and make default for .js
-(add-to-list 'auto-mode-alist '("\\.js?\\'" . js2-mode))
-;; (add-hook 'js2-mode-hook (lambda () (electric-indent-local-mode -1)))
 
 ;; polymode for r markdown
-(require 'poly-R)
-(require 'poly-markdown)
-(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+(use-package polymode
+  :ensure t)
 
-;; poly-markdown-mode auto-detects chunk types.
-(add-to-list 'auto-mode-alist '("\\.jmd\\'" . poly-markdown-mode))
+(use-package poly-markdown
+  :ensure polymode
+  ;; poly-markdown-mode auto-detects chunk types.
+  :mode (("\\.jmd\\'" . poly-markdown-mode)
+	 ("\\.Rmd" . poly-markdown+r-mode)))
+
 
 ;; mac switch meta key
 (defun mac-switch-meta nil 
@@ -373,8 +383,6 @@
  '(org-level-8 ((t (:inherit default :weight bold :foreground "#839496"))))
  '(smerge-refined-added ((t (:inherit smerge-refined-change :background "#22aa22")))))
 
-;; compile with C-x C-m
-(global-set-key (kbd "C-x C-m") 'compile)
 
 (put 'upcase-region 'disabled nil)
 
