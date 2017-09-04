@@ -16,6 +16,9 @@
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
 
+;; tabs = evil
+(setq-default indent-tabs-mode nil)
+
 ;; local ~/emacs.d/lisp/
 (let ((default-directory "~/.emacs.d/lisp/"))
   (normal-top-level-add-subdirs-to-load-path))
@@ -56,10 +59,8 @@
          ("C-S-s" . isearch-forward)
          ("C-r" . swiper)
          ("M-x" . counsel-M-x)
+         ("C-x C-f" . counsel-find-file)
          ("C-c k" . counsel-ag)))
-
-;; tabs = evil
-(setq-default indent-tabs-mode nil)
 
 (use-package multiple-cursors
   :ensure t
@@ -178,6 +179,7 @@
   :bind (("C-c i" . magit-status)))
 
 (use-package magithub
+  :ensure t
   :after magit
   :config (magithub-feature-autoinject t))
 
@@ -461,3 +463,7 @@
 
 ;; auto-follow compilation buffer, stopping at first error
 (setq compilation-scroll-output 'first-error)
+
+(use-package pkgbuild-mode
+  :ensure t
+  :mode "PKGBUILD\\'")
