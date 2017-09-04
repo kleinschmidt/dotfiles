@@ -79,7 +79,8 @@
   (setq pdf-annot-list-listed-types '(caret file highlight squiggly strike-out text underline unknown))
   :bind (:map pdf-view-mode-map
               ("C-s" . isearch-forward)
-              ("C-r" . isearch-backward)))
+              ("C-r" . isearch-backward)
+              ("M-h" . pdf-annot-add-highlight-markup-annotation)))
 
 ;; ess
 (use-package ess
@@ -327,7 +328,7 @@
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-agenda-files
    (quote
-    ("~/code/experiments/animal-similarity/imaging-analysis/pres/writeup/animals.org" "~/work/notes/todo.org" "~/work/notes/projects.org" "~/work/notes/general.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
+    ("~/work/advising/sten/sten.org" "~/code/experiments/animal-similarity/imaging-analysis/pres/writeup/animals.org" "~/work/notes/todo.org" "~/work/notes/projects.org" "~/work/notes/general.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
  '(org-directory "~/work/notes")
  '(package-selected-packages
    (quote
