@@ -481,5 +481,6 @@
 
 (define-key global-map "\M-Q" 'unfill-paragraph)
 
-(use-package yaml
-  :ensure t)
+(use-package yaml-mode
+  :ensure t
+  :mode "\\.[yY][aA]?[mM][lL]\\'")
