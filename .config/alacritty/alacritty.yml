@@ -146,10 +146,15 @@ custom_cursor_colors: false
 
 # solarized
 colors:
-  # Default colors
+  # Default colors: dark theme
   primary:
     background: '0x002b36'
     foreground: '0x839496'
+
+  # Default colors: light theme
+  # primary:
+  #   background: '0xfdf6e3'
+  #   foreground: '0x657b83'
 
   # Normal colors
   normal:
@@ -202,7 +207,7 @@ visual_bell:
   duration: 0
 
 # Background opacity
-background_opacity: 1.0
+background_opacity: 0.98
 
 # Key bindings
 #
