@@ -320,7 +320,7 @@
  '(inhibit-startup-screen t)
  '(ispell-program-name "aspell")
  '(js2-include-node-externs t)
- '(julia-repl-executable "julia-jb-namedtuples")
+ '(julia-repl-executable "julia")
  '(magit-diff-use-overlays nil)
  '(markdown-enable-math t)
  '(nrepl-message-colors
@@ -328,11 +328,11 @@
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-agenda-files
    (quote
-    ("~/work/advising/sten/sten.org" "~/code/experiments/animal-similarity/imaging-analysis/pres/writeup/animals.org" "~/work/notes/todo.org" "~/work/notes/projects.org" "~/work/notes/general.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
+    ("~/work/talkernet/talkernet.org" "~/work/advising/sten/sten.org" "~/code/experiments/animal-similarity/imaging-analysis/pres/writeup/animals.org" "~/work/notes/todo.org" "~/work/notes/projects.org" "~/work/notes/general.org" "~/work/notes/talks.org" "~/work/notes/unfuck.org" "~/work/notes/writing.org" "~/work/notes/julia.org")))
  '(org-directory "~/work/notes")
  '(package-selected-packages
    (quote
-    (magithub expand-region pdf-tools multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
+    (pkgbuild-mode magithub expand-region multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
@@ -395,6 +395,7 @@
 
 ;; org mode prettification
 (use-package org
+  :ensure org-bullets
   :config
   (let* ((base-font-color (face-foreground 'default nil 'default))
          (headline `(:inherit default :weight bold :foreground ,base-font-color)))
@@ -468,3 +469,14 @@
 (use-package pkgbuild-mode
   :ensure t
   :mode "PKGBUILD\\'")
+
+;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph    
+(defun unfill-paragraph (&optional region)
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max))
+        ;; This would override `fill-column' if it's an integer.
+        (emacs-lisp-docstring-fill-column t))
+    (fill-paragraph nil region)))
+
+(define-key global-map "\M-Q" 'unfill-paragraph)
