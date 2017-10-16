@@ -96,13 +96,13 @@
 ;; julia mode
 (use-package julia-mode
   :ensure t
+  :ensure julia-repl
   :init
   ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
   ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
   (setq auto-mode-alist (rassq-delete-all 'julia-mode auto-mode-alist))
   :mode "\\.jl\\'"
   :config
-  (use-package julia-repl)
   (add-hook 'julia-mode-hook 'julia-repl-mode))
 
 ;; Function to switch on adpative-wrap-prefix-mode for visual-line-mode
@@ -332,7 +332,7 @@
  '(org-directory "~/work/notes")
  '(package-selected-packages
    (quote
-    (yaml yaml-mode pkgbuild-mode magithub expand-region multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
+    (julia-repl yaml yaml-mode pkgbuild-mode magithub expand-region multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
