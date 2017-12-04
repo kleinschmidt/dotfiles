@@ -44,8 +44,6 @@
 ;; ivy
 (use-package ivy
   :ensure t
-  :ensure swiper
-  :ensure counsel
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
@@ -54,13 +52,37 @@
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-re-builders-alist
 	;; allow input not in order
-        '((t   . ivy--regex-ignore-order)))
+        '((t   . ivy--regex-ignore-order))))
+
+(use-package swiper
+  :requires ivy
   :bind (("C-s" . swiper)
          ("C-S-s" . isearch-forward)
-         ("C-r" . swiper)
-         ("M-x" . counsel-M-x)
+         ("C-r" . swiper)))
+
+(use-package counsel
+  :requires ivy
+  :bind (("M-x" . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
          ("C-c k" . counsel-ag)))
+  
+
+(use-package ace-jump-mode
+  :ensure t
+  :bind (("C-." . ace-jump-mode)
+         ("C-," . ace-jump-mode-pop-mark))
+  :config
+  (ace-jump-mode-enable-mark-sync))
+
+(use-package ace-window
+  :ensure t
+  :bind ("M-." . ace-window)
+  :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
+;; allow ace window jump in term character mode
+(use-package term
+  :bind (:map term-raw-map
+              ("M-." . ace-window)))
 
 (use-package multiple-cursors
   :ensure t
@@ -75,8 +97,8 @@
   :ensure t
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :config
-  (pdf-tools-install)
   (setq pdf-annot-list-listed-types '(caret file highlight squiggly strike-out text underline unknown))
+  (pdf-tools-install)
   :bind (:map pdf-view-mode-map
               ("C-s" . isearch-forward)
               ("C-r" . isearch-backward)
@@ -85,7 +107,6 @@
 ;; ess
 (use-package ess
   :ensure t
-  :ensure stan-mode
   :config
   (add-hook 'ess-mode-hook
             (lambda ()
@@ -93,10 +114,13 @@
               (ess-toggle-underscore t)
               (ess-toggle-underscore nil))))
 
+(use-package stan-mode
+  :requires ess)
+
 ;; julia mode
 (use-package julia-mode
+  :requires julia-repl
   :ensure t
-  :ensure julia-repl
   :init
   ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
   ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
@@ -104,6 +128,9 @@
   :mode "\\.jl\\'"
   :config
   (add-hook 'julia-mode-hook 'julia-repl-mode))
+
+(use-package julia-repl
+  :ensure t)
 
 ;; Function to switch on adpative-wrap-prefix-mode for visual-line-mode
 ;; when appropriate.
@@ -148,7 +175,7 @@
 	  (reftex-cite-key-separator "; @"))
       (reftex-citation)))
   :bind (:map markdown-mode-map
-	 ("C-c [" . reftex-citation)))
+	 ("C-c [" . markdown-reftex-citation)))
 
 (defun grunt ()
   "Run grunt"
@@ -179,10 +206,10 @@
   :ensure t
   :bind (("C-c i" . magit-status)))
 
-(use-package magithub
-  :ensure t
-  :after magit
-  :config (magithub-feature-autoinject t))
+;; (use-package magithub
+;;   :ensure t
+;;   :after magit
+;;   :config (magithub-feature-autoinject t))
 
 ;; AUCTeX fontification
 ;; apacite citation macros
@@ -238,13 +265,15 @@
 
 ;; polymode for r markdown
 (use-package polymode
-  :ensure t)
-
-(use-package poly-markdown
-  :ensure polymode
-  ;; poly-markdown-mode auto-detects chunk types.
+  :ensure t
   :mode (("\\.jmd\\'" . poly-markdown-mode)
 	 ("\\.Rmd" . poly-markdown+r-mode)))
+
+;; (use-package poly-markdown
+;;   :ensure polymode
+;;   ;; poly-markdown-mode auto-detects chunk types.
+;;   :mode (("\\.jmd\\'" . poly-markdown-mode)
+;; 	 ("\\.Rmd" . poly-markdown+r-mode)))
 
 
 ;; mac switch meta key
@@ -320,7 +349,7 @@
  '(inhibit-startup-screen t)
  '(ispell-program-name "aspell")
  '(js2-include-node-externs t)
- '(julia-repl-executable "julia")
+ '(julia-repl-executable "/home/dave/build/julia/julia")
  '(magit-diff-use-overlays nil)
  '(markdown-enable-math t)
  '(nrepl-message-colors
@@ -332,12 +361,12 @@
  '(org-directory "~/work/notes")
  '(package-selected-packages
    (quote
-    (julia-repl yaml yaml-mode pkgbuild-mode magithub expand-region multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode use-package exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
+    (poly-markdown ace-jump-mode ace-window julia-repl yaml yaml-mode pkgbuild-mode expand-region multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
- '(smerge-command-prefix "\"\\C-cv\"")
+ '(smerge-command-prefix "\"\\C-cv\"" t)
  '(term-default-bg-color "#002b36")
  '(term-default-fg-color "#839496")
  '(vc-annotate-background nil)
@@ -395,7 +424,7 @@
 
 ;; org mode prettification
 (use-package org
-  :ensure org-bullets
+  :requires org-bullets
   :config
   (let* ((base-font-color (face-foreground 'default nil 'default))
          (headline `(:inherit default :weight bold :foreground ,base-font-color)))
@@ -411,7 +440,6 @@
                             `(org-level-8 ((t (,@headline))))
                             )
     )
-  (use-package org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))  
   (setq org-hide-emphasis-markers nil)
   (add-hook 'org-mode-hook 'auto-fill-mode)
@@ -419,6 +447,8 @@
          ("C-c l" . org-store-link)
          ("C-c b" . org-iswitchb)
          ("C-c c" . org-capture)))
+
+(use-package org-bullets)
 
 ;;------------------------------------------------------------------------------
 ;; change font size for current frame
@@ -484,3 +514,4 @@
 (use-package yaml-mode
   :ensure t
   :mode "\\.[yY][aA]?[mM][lL]\\'")
+
