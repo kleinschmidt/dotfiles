@@ -23,6 +23,9 @@
 (let ((default-directory "~/.emacs.d/lisp/"))
   (normal-top-level-add-subdirs-to-load-path))
 
+(add-to-list 'load-path "~/build/use-package")
+(require 'use-package)
+
 ;; compile with C-x C-m
 (global-set-key (kbd "C-x C-m") 'compile)
 
