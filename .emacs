@@ -33,6 +33,8 @@
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/"))
 (package-initialize)
 
 ;; solarized theme
@@ -108,6 +110,8 @@
               ("M-h" . pdf-annot-add-highlight-markup-annotation)))
 
 ;; ess
+
+
 (use-package ess
   :ensure t
   :config
@@ -115,7 +119,16 @@
             (lambda ()
               (ess-set-style 'RStudio 'quiet)
               (ess-toggle-underscore t)
-              (ess-toggle-underscore nil))))
+              (ess-toggle-underscore nil)))
+  (defun ess-pipe ()
+    (interactive)
+    "Insert a pipe"
+    (if (char-equal (char-before) ? )
+        ()
+      (insert " "))
+    (insert "%>%")
+    (ess-newline-and-indent))
+  :bind ("C-c C-m" . ess-pipe))
 
 (use-package stan-mode
   :requires ess)
@@ -147,6 +160,7 @@
 ;;; markdown mode
 (use-package markdown-mode
   :ensure t
+  :pin melpa-stable
   :config
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
@@ -209,10 +223,10 @@
   :ensure t
   :bind (("C-c i" . magit-status)))
 
-;; (use-package magithub
-;;   :ensure t
-;;   :after magit
-;;   :config (magithub-feature-autoinject t))
+(use-package magithub
+  :ensure t
+  :after magit
+  :config (magithub-feature-autoinject t))
 
 ;; AUCTeX fontification
 ;; apacite citation macros
@@ -364,12 +378,12 @@
  '(org-directory "~/work/notes")
  '(package-selected-packages
    (quote
-    (poly-markdown ace-jump-mode ace-window julia-repl yaml yaml-mode pkgbuild-mode expand-region multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode exec-path-from-shell markdown-mode adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
+    (markdown-mode poly-markdown ace-jump-mode ace-window julia-repl yaml yaml-mode pkgbuild-mode expand-region multiple-cursors matlab-mode counsel flyspell-correct-ivy ivy ivy-bibtex swiper auctex stan-mode exec-path-from-shell adaptive-wrap web-mode wc-mode solarized-theme polymode org-bullets magit js2-mode ess auctex-latexmk)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(reb-re-syntax (quote string))
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
- '(smerge-command-prefix "\"\\C-cv\"" t)
+ '(smerge-command-prefix "\"\\C-cv\"")
  '(term-default-bg-color "#002b36")
  '(term-default-fg-color "#839496")
  '(vc-annotate-background nil)
@@ -427,7 +441,7 @@
 
 ;; org mode prettification
 (use-package org
-  :requires org-bullets
+  :ensure org-bullets
   :config
   (let* ((base-font-color (face-foreground 'default nil 'default))
          (headline `(:inherit default :weight bold :foreground ,base-font-color)))
@@ -450,8 +464,6 @@
          ("C-c l" . org-store-link)
          ("C-c b" . org-iswitchb)
          ("C-c c" . org-capture)))
-
-(use-package org-bullets)
 
 ;;------------------------------------------------------------------------------
 ;; change font size for current frame
