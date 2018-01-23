@@ -110,11 +110,13 @@
               ("M-h" . pdf-annot-add-highlight-markup-annotation)))
 
 ;; ess
-
-
 (use-package ess
   :ensure t
+  :ensure julia-mode
   :config
+  ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
+  ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
+  (setq auto-mode-alist (rassq-delete-all 'julia-mode auto-mode-alist))
   (add-hook 'ess-mode-hook
             (lambda ()
               (ess-set-style 'RStudio 'quiet)
@@ -135,8 +137,8 @@
 
 ;; julia mode
 (use-package julia-mode
-  :requires julia-repl
   :ensure t
+  :ensure julia-repl
   :init
   ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
   ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
@@ -145,8 +147,6 @@
   :config
   (add-hook 'julia-mode-hook 'julia-repl-mode))
 
-(use-package julia-repl
-  :ensure t)
 
 ;; Function to switch on adpative-wrap-prefix-mode for visual-line-mode
 ;; when appropriate.
