@@ -111,7 +111,6 @@
 
 ;; ess
 (use-package ess
-  :ensure t
   :ensure julia-mode
   :config
   ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
@@ -137,7 +136,6 @@
 
 ;; julia mode
 (use-package julia-mode
-  :ensure t
   :ensure julia-repl
   :init
   ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
