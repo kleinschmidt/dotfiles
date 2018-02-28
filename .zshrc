@@ -38,6 +38,10 @@ export PATH="/home/dave/bin/:$PATH"
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=white'
 
+# ls colors (also use for completion)
+source /usr/share/zsh/plugins/zsh-dircolors-solarized/zsh-dircolors-solarized.zsh
+alias ls='ls --color=auto'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # freesurfer: installed manually by expanding tarball to /opt/
 export FREESURFER_HOME=/opt/freesurfer
