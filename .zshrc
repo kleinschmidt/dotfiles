@@ -19,6 +19,7 @@ prompt spaceship
 # lolcommits configuration
 export LOLCOMMITS_DELAY=1
 export LOLCOMMITS_FORK=1
+export LOLCOMMITS_STEALTH=1
 
 # for dotfiles, use `config ...` instead of `git ...`
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
