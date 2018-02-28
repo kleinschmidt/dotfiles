@@ -190,7 +190,11 @@
 	  (reftex-cite-key-separator "; @"))
       (reftex-citation)))
   :bind (:map markdown-mode-map
-	 ("C-c [" . markdown-reftex-citation)))
+              ("C-c [" . markdown-reftex-citation)
+              ("M-<right>" . markdown-demote)
+              ("M-<left>" . markdown-promote)
+              ("M-<up>" . markdown-move-up)
+              ("M-<down>" . markdown-move-down)))
 
 (defun grunt ()
   "Run grunt"
