@@ -12,6 +12,8 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Za-z}'
+
 autoload promptinit; promptinit
 prompt spaceship
 
