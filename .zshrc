@@ -17,6 +17,12 @@ zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Za-z}'
 autoload promptinit; promptinit
 prompt spaceship
 
+# SPACESHIP customization: nerd fonts
+export SPACESHIP_JULIA_SYMBOL=" "
+export SPACESHIP_PACKAGE_SYMBOL=" "
+export SPACESHIP_DOCKER_SYMBOL=" "
+
+
 # from .bashrc
 # lolcommits configuration
 export LOLCOMMITS_DELAY=1
