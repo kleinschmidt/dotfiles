@@ -85,9 +85,11 @@
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 ;; allow ace window jump in term character mode
+;; send C-<backspace> as backspace instead of kill-word
 (use-package term
   :bind (:map term-raw-map
-              ("M-." . ace-window)))
+              ("M-." . ace-window)
+              ("C-<backspace>" . term-send-backspace)))
 
 (use-package multiple-cursors
   :ensure t
