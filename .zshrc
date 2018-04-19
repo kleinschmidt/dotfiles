@@ -34,15 +34,10 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
 export PATH="$(ruby -e 'print Gem.user_dir')/bin:$PATH"
 
-# added by Miniconda3 4.3.11 installer
-export PATH="/home/dave/miniconda3/bin:$PATH"
-
 export EDITOR="emacsclient -t"
 export VISUAL="emacsclient -c -a emacs"
 
 export PATH="/home/dave/bin/:$PATH"
-
-
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=white'
 
@@ -51,6 +46,4 @@ source /usr/share/zsh/plugins/zsh-dircolors-solarized/zsh-dircolors-solarized.zs
 alias ls='ls --color=auto'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-# freesurfer: installed manually by expanding tarball to /opt/
-export FREESURFER_HOME=/opt/freesurfer
-export SUBJECTS_DIR=/opt/freesurfer/subjects
+source .zshrc_local
