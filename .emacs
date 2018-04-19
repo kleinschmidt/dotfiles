@@ -534,3 +534,11 @@
   :ensure t
   :mode "\\.[yY][aA]?[mM][lL]\\'")
 
+(use-package projectile
+  :ensure t)
+
+(use-package counsel-projectile
+  :ensure t
+  :demand t
+  :config
+  (counsel-projectile-mode))
