@@ -53,3 +53,4 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # freesurfer: installed manually by expanding tarball to /opt/
 export FREESURFER_HOME=/opt/freesurfer
+export SUBJECTS_DIR=/opt/freesurfer/subjects
