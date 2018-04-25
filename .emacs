@@ -114,10 +114,13 @@
 ;; ess
 (use-package ess
   :ensure julia-mode
+  :init
+  (require 'ess-site)
+  (push '("\\.jl\\'" . julia-mode) auto-mode-alist)
+  (delete-dups auto-mode-alist)
   :config
   ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
   ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
-  (setq auto-mode-alist (rassq-delete-all 'julia-mode auto-mode-alist))
   (add-hook 'ess-mode-hook
             (lambda ()
               (ess-set-style 'RStudio 'quiet)
@@ -139,10 +142,6 @@
 ;; julia mode
 (use-package julia-mode
   :ensure julia-repl
-  :init
-  ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
-  ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
-  (setq auto-mode-alist (rassq-delete-all 'julia-mode auto-mode-alist))
   :mode "\\.jl\\'"
   :config
   (add-hook 'julia-mode-hook 'julia-repl-mode))
