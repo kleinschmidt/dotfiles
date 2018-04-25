@@ -1,8 +1,5 @@
 (unless (getenv "LANG") (setenv "LANG" "en_US.UTF-8"))
 
-(setq custom-file "~/.emacs.d/customized.el")
-(load custom-file)
-
 (setq package-enable-at-startup nil) (package-initialize)
 
 (tool-bar-mode -1)
@@ -432,3 +429,6 @@
   :demand t
   :config
   (counsel-projectile-mode))
+
+(setq custom-file "~/.emacs.d/customized.el")
+(load custom-file)
