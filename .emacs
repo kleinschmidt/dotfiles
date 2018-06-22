@@ -146,6 +146,8 @@
   :config
   (add-hook 'julia-mode-hook 'julia-repl-mode))
 
+(define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
+  "Julia Doctest mode")
 
 ;; Function to switch on adpative-wrap-prefix-mode for visual-line-mode
 ;; when appropriate.
@@ -287,7 +289,8 @@
 (use-package polymode
   :ensure t
   :mode (("\\.jmd\\'" . poly-markdown-mode)
-	 ("\\.Rmd" . poly-markdown+r-mode)))
+	 ("\\.Rmd" . poly-markdown+r-mode)
+         ("\\.md\\'" . poly-markdown-mode)))
 
 ;; (use-package poly-markdown
 ;;   :ensure polymode
@@ -428,6 +431,12 @@
   :demand t
   :config
   (counsel-projectile-mode))
+
+(use-package color-theme-sanityinc-tomorrow
+  :ensure t)
+
+(use-package color-theme-sanityinc-solarized
+  :ensure t)
 
 (setq custom-file "~/.emacs.d/customized.el")
 (load custom-file)
