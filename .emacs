@@ -119,6 +119,7 @@
   (push '("\\.jl\\'" . julia-mode) auto-mode-alist)
   (delete-dups auto-mode-alist)
   :config
+  (setq ess-use-flymake nil)
   ;; a dirty hack: ess requires julia-mode, which adds an entry for "\\.jl\\'"
   ;; to the auto-mode-alist.  so it's impossible to shadow it using the same key
   (add-hook 'ess-mode-hook
@@ -428,6 +429,18 @@
   :demand t
   :config
   (counsel-projectile-mode))
+
+(use-package ag
+  :ensure t
+  :requires wgrep-ag
+  :bind (("C-c K" . ag)
+         :map ag-mode-map
+         ("C-c C-p" . wgrep-change-to-wgrep-mode)))
+
+(use-package wgrep-ag
+  :ensure t)
+(use-package wgrep
+  :ensure t)
 
 (setq custom-file "~/.emacs.d/customized.el")
 (load custom-file)
