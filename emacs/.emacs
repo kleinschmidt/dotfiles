@@ -1,6 +1,12 @@
 (unless (getenv "LANG") (setenv "LANG" "en_US.UTF-8"))
 
-(setq package-enable-at-startup nil) (package-initialize)
+;; melpa 
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(package-initialize)
 
 (tool-bar-mode -1)
 
@@ -19,23 +25,16 @@
 ;; tabs = evil
 (setq-default indent-tabs-mode nil)
 
+
 ;; local ~/emacs.d/lisp/
 (let ((default-directory "~/.emacs.d/lisp/"))
   (normal-top-level-add-subdirs-to-load-path))
 
-(add-to-list 'load-path "~/build/use-package")
-(require 'use-package)
+(eval-when-compile
+  (require 'use-package))
 
 ;; compile with C-x C-m
 (global-set-key (kbd "C-x C-m") 'compile)
-
-;; melpa 
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(package-initialize)
 
 ;; solarized theme
 (use-package solarized-theme
@@ -113,6 +112,7 @@
 
 ;; ess
 (use-package ess
+  :ensure t
   :ensure julia-mode
   :init
   (require 'ess-site)
@@ -138,6 +138,7 @@
   :bind ("C-c C-m" . ess-pipe))
 
 (use-package stan-mode
+  :ensure t
   :requires ess)
 
 ;; julia mode
