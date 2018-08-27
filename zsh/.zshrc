@@ -12,7 +12,7 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' rehash true matcher-list '' 'm:{a-z}={A-Za-z}'
 
 autoload promptinit; promptinit
 prompt spaceship
@@ -46,4 +46,6 @@ source /usr/share/zsh/plugins/zsh-dircolors-solarized/zsh-dircolors-solarized.zs
 alias ls='ls --color=auto'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-source .zshrc_local
+if [ -f .zshrc_local ]; then
+    source .zshrc_local
+fi
