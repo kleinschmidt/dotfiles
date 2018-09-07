@@ -49,3 +49,7 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 if [ -f .zshrc_local ]; then
     source .zshrc_local
 fi
+
+if [ -f clipboard.zsh ]; then
+    source clipboard.zsh
+fi
