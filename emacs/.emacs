@@ -432,7 +432,8 @@
   :ensure t
   :demand t
   :config
-  (counsel-projectile-mode))
+  (counsel-projectile-mode)
+  :bind ("C-c p" . projectile-command-map))
 
 (use-package ag
   :ensure t
