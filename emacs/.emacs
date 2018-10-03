@@ -289,17 +289,13 @@
 
 ;; polymode for r markdown
 (use-package polymode
+  :ensure t)
+
+(use-package poly-markdown
   :ensure t
+  ;; poly-markdown-mode auto-detects chunk types.
   :mode (("\\.jmd\\'" . poly-markdown-mode)
-	 ("\\.Rmd" . poly-markdown+r-mode)
-         ("\\.md\\'" . poly-markdown-mode)))
-
-;; (use-package poly-markdown
-;;   :ensure polymode
-;;   ;; poly-markdown-mode auto-detects chunk types.
-;;   :mode (("\\.jmd\\'" . poly-markdown-mode)
-;; 	 ("\\.Rmd" . poly-markdown+r-mode)))
-
+	 ("\\.Rmd" . poly-markdown-mode)))
 
 ;; mac switch meta key
 (defun mac-switch-meta nil 
