@@ -144,9 +144,13 @@
 ;; julia mode
 (use-package julia-mode
   :ensure julia-repl
+  :ensure fill-column-indicator
   :mode "\\.jl\\'"
   :config
-  (add-hook 'julia-mode-hook 'julia-repl-mode))
+  (add-hook 'julia-mode-hook (lambda ()
+                               (julia-repl-mode)
+                               (fci-mode)
+                               (setq fci-rule-column 92))))
 
 (define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
   "Julia Doctest mode")
@@ -449,6 +453,10 @@
 (use-package color-theme-sanityinc-solarized
   :ensure t)
 
+(use-package fill-column-indicator
+  :ensure t
+  :config
+  (setq fci-rule-width 3))
 
 (setq custom-file "~/.emacs.d/customized.el")
 (load custom-file)
