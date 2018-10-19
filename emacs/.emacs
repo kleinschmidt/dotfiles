@@ -361,9 +361,10 @@
         '(("j" "Journal" entry
            (file+olp+datetree "~/work/notes/journal.org")
            "* %?\n  Entered on %U\n  %i\n  %a")
-          ("t" "Daily task" entry
+          ("d" "Daily task" entry
            (file+olp+datetree "~/work/notes/journal.org")
-           "* TODO %?\n  Created on %U\n  %i\n  %a")))
+           "* TODO %?\n  Created on %U\n  %i\n  %a"
+           :time-prompt t)))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
