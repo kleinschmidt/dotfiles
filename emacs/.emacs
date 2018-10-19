@@ -1,4 +1,5 @@
 (unless (getenv "LANG") (setenv "LANG" "en_US.UTF-8"))
+(setq custom-file "~/.emacs.d/customized.el")
 
 ;; melpa 
 (require 'package)
@@ -339,11 +340,11 @@
   :ensure org-bullets
   :config
   (let* ((base-font-color (face-foreground 'default nil 'default))
-         (headline `(:inherit default :weight bold :foreground ,base-font-color)))
+         (headline `(:inherit default :weight bold :foreground ,base-font-color :height 1.0)))
     
     (custom-theme-set-faces 'user
-                            `(org-level-1 ((t (,@headline :height 1.3))))
-                            `(org-level-2 ((t (,@headline :height 1.1))))
+                            `(org-level-1 ((t (,@headline))))
+                            `(org-level-2 ((t (,@headline))))
                             `(org-level-3 ((t (,@headline))))
                             `(org-level-4 ((t (,@headline))))
                             `(org-level-5 ((t (,@headline))))
@@ -458,5 +459,4 @@
   :config
   (setq fci-rule-width 3))
 
-(setq custom-file "~/.emacs.d/customized.el")
 (load custom-file)
