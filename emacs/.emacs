@@ -26,6 +26,8 @@
 ;; tabs = evil
 (setq-default indent-tabs-mode nil)
 
+;; auto-fill in text mode
+(add-hook 'text-mode-hook 'auto-fill-mode)
 
 ;; local ~/emacs.d/lisp/
 (let ((default-directory "~/.emacs.d/lisp/"))
