@@ -360,7 +360,10 @@
   (setq org-capture-templates
         '(("j" "Journal" entry
            (file+olp+datetree "~/work/notes/journal.org")
-           "* %?\n  Entered on %U\n  %i\n  %a")))
+           "* %?\n  Entered on %U\n  %i\n  %a")
+          ("t" "Daily task" entry
+           (file+olp+datetree "~/work/notes/journal.org")
+           "* TODO %?\n  Created on %U\n  %i\n  %a")))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
