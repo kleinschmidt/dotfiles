@@ -357,6 +357,10 @@
     )
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))  
   (setq org-hide-emphasis-markers nil)
+  (setq org-capture-templates
+        '(("j" "Journal" entry
+           (file+olp+datetree "~/work/notes/journal.org")
+           "* %?\n  Entered on %U\n  %i\n  %a")))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
