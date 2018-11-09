@@ -29,6 +29,10 @@
 ;; auto-fill in text mode
 (add-hook 'text-mode-hook 'auto-fill-mode)
 
+;; show column/line numbers
+(setq column-number-mode t)
+(setq line-number-mode t)
+
 ;; local ~/emacs.d/lisp/
 (let ((default-directory "~/.emacs.d/lisp/"))
   (normal-top-level-add-subdirs-to-load-path))
@@ -361,6 +365,10 @@
         '(("j" "Journal" entry
            (file+olp+datetree "~/work/notes/journal.org")
            "* %?\n  Entered on %U\n  %i\n  %a")
+          ("J" "Journal (other date)" entry
+           (file+olp+datetree "~/work/notes/journal.org")
+           "* %?\n  Entered on %U\n  %i\n  %a"
+           :time-prompt t)
           ("d" "Daily task" entry
            (file+olp+datetree "~/work/notes/journal.org")
            "* TODO %?\n  Created on %U\n  %i\n  %a"
@@ -462,6 +470,9 @@
   :ensure t)
 
 (use-package color-theme-sanityinc-solarized
+  :ensure t)
+
+(use-package csv-mode
   :ensure t)
 
 (use-package fill-column-indicator
