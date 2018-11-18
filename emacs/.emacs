@@ -26,6 +26,9 @@
 ;; tabs = evil
 (setq-default indent-tabs-mode nil)
 
+;; fill at 80 chars
+(setq-default fill-column 80)
+
 ;; auto-fill in text mode
 (add-hook 'text-mode-hook 'auto-fill-mode)
 
