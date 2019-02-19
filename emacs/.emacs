@@ -243,10 +243,8 @@
   :ensure t
   :bind (("C-c i" . magit-status)))
 
-(use-package magithub
-  :ensure t
-  :after magit
-  :config (magithub-feature-autoinject t))
+(use-package forge
+  :ensure t)
 
 ;; AUCTeX fontification
 ;; apacite citation macros
