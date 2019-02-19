@@ -112,9 +112,10 @@
 (use-package pdf-tools
   :ensure t
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :init
+  (pdf-tools-install)
   :config
   (setq pdf-annot-list-listed-types '(caret file highlight squiggly strike-out text underline unknown))
-  (pdf-tools-install)
   :bind (:map pdf-view-mode-map
               ("C-s" . isearch-forward)
               ("C-r" . isearch-backward)
@@ -144,7 +145,7 @@
         ()
       (insert " "))
     (insert "%>%")
-    (ess-newline-and-indent))
+    (ess-roxy-newline-and-indent))
   :bind ("C-c C-m" . ess-pipe))
 
 (use-package stan-mode
@@ -158,9 +159,7 @@
   :mode "\\.jl\\'"
   :config
   (add-hook 'julia-mode-hook (lambda ()
-                               (julia-repl-mode)
-                               (fci-mode)
-                               (setq fci-rule-column 92))))
+                               (julia-repl-mode))))
 
 (define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
   "Julia Doctest mode")
@@ -367,10 +366,10 @@
   (setq org-capture-templates
         '(("j" "Journal" entry
            (file+olp+datetree "~/work/notes/journal.org")
-           "* %?\n  Entered on %U\n  %i\n  %a")
+           "* %?\n  Entered on %U  From %i\n  %a")
           ("J" "Journal (other date)" entry
            (file+olp+datetree "~/work/notes/journal.org")
-           "* %?\n  Entered on %U\n  %i\n  %a"
+           "* %?\n  Entered on %U  From %i\n  %a"
            :time-prompt t)
           ("d" "Daily task" entry
            (file+olp+datetree "~/work/notes/journal.org")
@@ -484,3 +483,4 @@
   (setq fci-rule-width 3))
 
 (load custom-file)
+(put 'narrow-to-region 'disabled nil)
