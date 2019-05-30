@@ -1,6 +1,10 @@
-*~
 .Rhistory
 .juliahistory
+
+# Temporary and lock files #
+############################
+*~
+.~lock.*
 
 # Binary blobs #
 ################
