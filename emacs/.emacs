@@ -152,6 +152,10 @@
   :ensure t
   :requires ess)
 
+;; jupyter integration (mostly for julia)
+(use-package jupyter
+  :ensure t)
+
 ;; julia mode
 (use-package julia-mode
   :ensure julia-repl
