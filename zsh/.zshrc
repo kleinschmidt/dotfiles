@@ -2,6 +2,9 @@
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
+
+[[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
+
 unsetopt autocd beep nomatch
 bindkey -e
 # End of lines configured by zsh-newuser-install
