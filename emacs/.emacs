@@ -208,7 +208,7 @@
 	  (reftex-cite-key-separator "; @"))
       (reftex-citation)))
   :bind (:map markdown-mode-map
-              ("C-c [" . markdown-reftex-citation)
+              ("C-c [" . ivy-bibtex)
               ("M-<right>" . markdown-demote)
               ("M-<left>" . markdown-promote)
               ("M-<up>" . markdown-move-up)
@@ -244,7 +244,7 @@
   :bind (("C-c i" . magit-status)))
 
 (use-package forge
-  :ensure t)
+  :after magit)
 
 ;; AUCTeX fontification
 ;; apacite citation macros
@@ -273,6 +273,14 @@
 (setq reftex-default-bibliography
       (list (concat (file-name-as-directory (getenv "HOME"))
                     "Documents/papers/library-clean.bib")))
+
+(use-package ivy-bibtex
+  :ensure t
+  :config
+  (setq bibtex-completion-bibliography
+        '("~/Documents/papers/zotero.bib"))
+  (setq bibtex-completion-pdf-field "File")
+  (setq ivy-bibtex-default-action 'ivy-bibtex-insert-key))
 
 ;; Use latexmk with auctex (package installed via MELPA)
 (use-package auctex-latexmk
