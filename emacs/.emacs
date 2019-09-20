@@ -284,7 +284,10 @@
   (setq bibtex-completion-bibliography
         '("~/Documents/papers/zotero.bib"))
   (setq bibtex-completion-pdf-field "File")
-  (setq ivy-bibtex-default-action 'ivy-bibtex-insert-key))
+  (setq ivy-bibtex-default-action 'ivy-bibtex-insert-key)
+  (ivy-add-actions
+   'ivy-bibtex
+   '(("O" ivy-bibtex-open-pdf "Open PDF (if present)"))))
 
 ;; Use latexmk with auctex (package installed via MELPA)
 (use-package auctex-latexmk
@@ -389,7 +392,8 @@
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
          ("C-c b" . org-iswitchb)
-         ("C-c c" . org-capture)))
+         ("C-c c" . org-capture)
+         ("C-c [" . ivy-bibtex)))
 
 ;;------------------------------------------------------------------------------
 ;; change font size for current frame
