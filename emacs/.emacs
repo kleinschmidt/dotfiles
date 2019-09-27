@@ -154,16 +154,16 @@
 
 ;; jupyter integration (mostly for julia)
 (use-package jupyter
-  :ensure t)
+  :ensure t
+  :config
+  (setq jupyter-repl-echo-eval-p t))
 
 ;; julia mode
 (use-package julia-mode
   :ensure julia-repl
   :ensure fill-column-indicator
   :mode "\\.jl\\'"
-  :config
-  (add-hook 'julia-mode-hook (lambda ()
-                               (julia-repl-mode))))
+  :config)
 
 (define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
   "Julia Doctest mode")
