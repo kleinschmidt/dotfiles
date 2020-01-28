@@ -7,6 +7,8 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(add-to-list 'package-archives
+             '("org" . "http://orgmode.org/elpa/"))
 (package-initialize)
 
 (tool-bar-mode -1)
@@ -163,7 +165,8 @@
   :ensure julia-repl
   :ensure fill-column-indicator
   :mode "\\.jl\\'"
-  :config)
+  :config
+  (add-hook 'julia-mode 'jupyter-repl-interaction-mode))
 
 (define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
   "Julia Doctest mode")
@@ -237,9 +240,18 @@
 (use-package js2-mode
   :ensure t
   :mode "\\.js?\\'"
+  :config
+  (setq js2-basic-offset 2)
   :bind (:map js2-mode-map
 	 ("C-c g" . grunt)))
 ;; (add-hook 'js2-mode-hook (lambda () (electric-indent-local-mode -1)))
+
+(use-package restclient
+  :ensure t)
+
+(use-package ob-restclient
+  :load-path "~/.emacs.d/lisp/ob-restclient.el/"
+  :after restclient)
 
 
 ;; Bind magit-status to C-c i
@@ -359,7 +371,11 @@
 ;; org mode prettification
 (use-package org
   :ensure org-bullets
+  :ensure org-plus-contrib
   :config
+  (setq org-confirm-babel-evaluate nil)
+  (add-to-list 'org-structure-template-alist
+               '("jl" . "src jupyter-julia"))
   (let* ((base-font-color (face-foreground 'default nil 'default))
          (headline `(:inherit default :weight bold :foreground ,base-font-color :height 1.0)))
     
@@ -389,6 +405,12 @@
            "* TODO %?\n  Created on %U\n  %i\n  %a"
            :time-prompt t)))
   (add-hook 'org-mode-hook 'auto-fill-mode)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (julia . t)
+     (jupyter . t)
+     (restclient . t)))
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
          ("C-c b" . org-iswitchb)
