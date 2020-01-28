@@ -38,9 +38,12 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 export PATH="$(ruby -e 'print Gem.user_dir')/bin:$PATH"
 
 export EDITOR="emacsclient -t"
-export VISUAL="emacsclient -c -a emacs"
+export VISUAL="emacsclient -a emacs"
 
-export PATH="/home/dave/bin/:$PATH"
+export PATH="$HOME/bin/:$PATH"
+
+export PATH="$HOME/.node_modules/bin:$PATH"
+export npm_config_prefix="~/.node_modules"
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=white'
 
