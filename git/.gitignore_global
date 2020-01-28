@@ -1,0 +1,57 @@
+.Rhistory
+.juliahistory
+
+# Temporary and lock files #
+############################
+*~
+.~lock.*
+
+# Binary blobs #
+################
+*.pdf
+*.doc
+*.docx
+
+# OS generated files #
+######################
+Icon*
+.dropbox
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Knitr/rmarkdown generated #
+#############################
+
+*.knit.md
+*.utf8.md
+*_cache/
+*_files/
+
+# Latex intermediate files #
+############################
+
+*.aux
+*.bbl
+*.bcf
+*.fdb_latexmk
+*.fls
+*.log
+*.run.xml
