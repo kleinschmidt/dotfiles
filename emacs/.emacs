@@ -458,7 +458,12 @@
   :ensure t
   :config
   (setq exec-path-from-shell-check-startup-files nil)
-  (exec-path-from-shell-initialize))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-envs (list "LOLCOMMITS_DELAY"
+                                        "LOLCOMMITS_FORK"
+                                        "LOLCOMMITS_STEALTH"
+                                        "LOLCOMMITS_DEVICE")))
+
 
 ;; auto-follow compilation buffer, stopping at first error
 (setq compilation-scroll-output 'first-error)
