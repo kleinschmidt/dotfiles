@@ -327,7 +327,8 @@
 
 ;; polymode for r markdown
 (use-package polymode
-  :ensure t)
+  :ensure t
+  :mode (("\\.org\\'" . org-mode)))
 
 (use-package poly-markdown
   :ensure t
@@ -377,7 +378,7 @@
   (add-to-list 'org-structure-template-alist
                '("jl" . "src jupyter-julia"))
   (let* ((base-font-color (face-foreground 'default nil 'default))
-         (headline `(:inherit default :weight bold :foreground ,base-font-color :height 1.0)))
+         (headline `(:inherit default :weight bold :height 1.0)))
     
     (custom-theme-set-faces 'user
                             `(org-level-1 ((t (,@headline))))
@@ -405,6 +406,7 @@
            "* TODO %?\n  Created on %U\n  %i\n  %a"
            :time-prompt t)))
   (add-hook 'org-mode-hook 'auto-fill-mode)
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
