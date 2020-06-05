@@ -56,6 +56,6 @@ if [ -f .zshrc_local ]; then
     source .zshrc_local
 fi
 
-if [ -f clipboard.zsh ]; then
-    source clipboard.zsh
+if [ -f ~/clipboard.zsh ]; then
+    source ~/clipboard.zsh
 fi
