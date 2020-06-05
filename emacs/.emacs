@@ -377,9 +377,7 @@
   (setq org-confirm-babel-evaluate nil)
   (add-to-list 'org-structure-template-alist
                '("jl" . "src jupyter-julia"))
-  (let* ((base-font-color (face-foreground 'default nil 'default))
-         (headline `(:inherit default :weight bold :height 1.0)))
-    
+  (let* ((headline `(:inherit default :weight bold :height 1.0)))
     (custom-theme-set-faces 'user
                             `(org-level-1 ((t (,@headline))))
                             `(org-level-2 ((t (,@headline))))
