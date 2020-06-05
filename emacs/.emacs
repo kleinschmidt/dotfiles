@@ -11,6 +11,13 @@
              '("org" . "http://orgmode.org/elpa/"))
 (package-initialize)
 
+;; local ~/emacs.d/lisp/
+(let ((default-directory "~/.emacs.d/lisp/"))
+  (normal-top-level-add-subdirs-to-load-path))
+
+(eval-when-compile
+  (require 'use-package))
+
 (tool-bar-mode -1)
 
 (setq dired-listing-switches "-alh")
@@ -37,13 +44,6 @@
 ;; show column/line numbers
 (setq column-number-mode t)
 (setq line-number-mode t)
-
-;; local ~/emacs.d/lisp/
-(let ((default-directory "~/.emacs.d/lisp/"))
-  (normal-top-level-add-subdirs-to-load-path))
-
-(eval-when-compile
-  (require 'use-package))
 
 ;; compile with C-x C-m
 (global-set-key (kbd "C-x C-m") 'compile)
