@@ -215,7 +215,6 @@
 	  (reftex-cite-key-separator "; @"))
       (reftex-citation)))
   :bind (:map markdown-mode-map
-              ("C-c [" . ivy-bibtex)
               ("M-<right>" . markdown-demote)
               ("M-<left>" . markdown-promote)
               ("M-<up>" . markdown-move-up)
@@ -299,7 +298,9 @@
   (setq ivy-bibtex-default-action 'ivy-bibtex-insert-key)
   (ivy-add-actions
    'ivy-bibtex
-   '(("O" ivy-bibtex-open-pdf "Open PDF (if present)"))))
+   '(("O" ivy-bibtex-open-pdf "Open PDF (if present)")))
+  :bind ("M-[" . ivy-bibtex))
+  
 
 ;; Use latexmk with auctex (package installed via MELPA)
 (use-package auctex-latexmk
@@ -414,8 +415,7 @@
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
          ("C-c b" . org-iswitchb)
-         ("C-c c" . org-capture)
-         ("C-c [" . ivy-bibtex)))
+         ("C-c c" . org-capture)))
 
 ;;------------------------------------------------------------------------------
 ;; change font size for current frame
