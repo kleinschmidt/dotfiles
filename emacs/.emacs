@@ -256,7 +256,7 @@
 ;; Bind magit-status to C-c i
 (use-package magit
   :ensure t
-  :bind (("C-c i" . magit-status)))
+  :bind (("C-c j" . magit-status)))
 
 (use-package forge
   :after magit)
@@ -403,7 +403,19 @@
           ("d" "Daily task" entry
            (file+olp+datetree "~/work/notes/journal.org")
            "* TODO %?\n  Created on %U\n  %i\n  %a"
-           :time-prompt t)))
+           :time-prompt t)
+          ("i" "Inbox" entry
+           (file "inbox.org")
+           "* TODO %?\n/Entered on/ %U")
+          ("n" "Note" entry
+           (file "notes.org")
+           "* Note (%a)\n  /Entered on/ %U\n" "\n" "%?")))
+  (defun org-capture-inbox ()
+    (interactive)
+    (call-interactively 'org-store-link)
+    (org-capture nil "i"))
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   (org-babel-do-load-languages
@@ -415,7 +427,8 @@
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
          ("C-c b" . org-iswitchb)
-         ("C-c c" . org-capture)))
+         ("C-c c" . org-capture)
+         ("C-c i" . org-capture-inbox)))
 
 ;;------------------------------------------------------------------------------
 ;; change font size for current frame
