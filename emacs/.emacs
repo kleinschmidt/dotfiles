@@ -410,7 +410,10 @@
            "* TODO %?\n/Entered on/ %U")
           ("n" "Note" entry
            (file "notes.org")
-           "* Note (%a)\n  /Entered on/ %U\n" "\n" "%?")))
+           "* Note (%a)\n  /Entered on/ %U\n" "\n" "%?")
+          ("m" "Meeting" entry
+           (file+headline "agenda.org" "Future")
+           "* %? :meeting:\n<%<%Y-%m-%d %a %H:%M>>")))
   (defun org-capture-inbox ()
     (interactive)
     (call-interactively 'org-store-link)
@@ -429,6 +432,36 @@
                (not (org-entry-get nil "ACTIVATED")))
       (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
   (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
+  (setq org-log-done 'time)
+  ;; custom agenda view
+  (setq org-agenda-compact-blocks t)
+  (setq org-agenda-custom-commands
+        '(("g" "Get Things Done (GTD)"
+           
+           (;; scheduled things for day
+            (agenda ""
+                    ((org-agenda-skip-function
+                      '(org-agenda-skip-entry-if 'deadline))
+                     (org-deadline-warning-days 0)))
+            ;; list of next tasks 
+            (todo "NEXT"
+                  ((org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'deadline))
+                   (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                   (org-agenda-overriding-header "\nTasks\n")))
+            ;; deadlines for next week
+            (agenda nil
+                    ((org-agenda-entry-types '(:deadline))
+                     (org-agenda-format-date "")
+                     (org-deadline-warning-days 7)
+                     (org-agenda-skip-function
+                      '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+                     (org-agenda-overriding-header "\nDeadlines")))
+            (tags-todo "inbox"
+                       ((org-agenda-prefix-format "  %?-12t% s")
+                        (org-agenda-overriding-header "Inbox\n")))
+            (tags "CLOSED>=\"<today>\""
+                  ((org-agenda-overriding-header "\nCompleted today\n")))))))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   (org-babel-do-load-languages
