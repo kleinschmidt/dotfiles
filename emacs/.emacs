@@ -392,6 +392,7 @@
     )
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))  
   (setq org-hide-emphasis-markers nil)
+  (setq org-directory "~/work/notes/")
   (setq org-capture-templates
         '(("j" "Journal" entry
            (file+olp+datetree "~/work/notes/journal.org")
@@ -414,8 +415,20 @@
     (interactive)
     (call-interactively 'org-store-link)
     (org-capture nil "i"))
+  (setq org-agenda-files (list "inbox.org" "projects.org"))
   (setq org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
+  (setq org-refile-targets
+        '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")))
+  (setq org-refile-use-outline-path 'file)
+  (setq org-outline-path-complete-in-steps nil)
+  ;; log NEXT time with an ACTIVATED time stamp
+  (defun log-todo-next-creation-date (&rest ignore)
+    "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
+    (when (and (string= (org-get-todo-state) "NEXT")
+               (not (org-entry-get nil "ACTIVATED")))
+      (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
+  (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
   (add-hook 'org-mode-hook 'auto-fill-mode)
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   (org-babel-do-load-languages
