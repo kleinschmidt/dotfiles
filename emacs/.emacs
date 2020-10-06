@@ -374,6 +374,7 @@
 (use-package org
   :ensure org-bullets
   :ensure org-plus-contrib
+  :ensure counsel
   :config
   (setq org-confirm-babel-evaluate nil)
   (add-to-list 'org-structure-template-alist
@@ -413,7 +414,8 @@
            "* Note (%a)\n  /Entered on/ %U\n" "\n" "%?")
           ("m" "Meeting" entry
            (file+headline "agenda.org" "Future")
-           "* %? :meeting:\n<%<%Y-%m-%d %a %H:%M>>")))
+           "* %? :meeting:\nSCHEDULED: %T"
+           :time-prompt t)))
   (defun org-capture-inbox ()
     (interactive)
     (call-interactively 'org-store-link)
@@ -422,6 +424,8 @@
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
   (setq org-refile-targets
         '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")
+          ("agenda.org" :regexp . "\\(Past\\|Future\\)")
+          ("ideas.org" :level . 1)
           (nil :maxlevel . 9)))
   (setq org-refile-use-outline-path 'file)
   (setq org-outline-path-complete-in-steps nil)
@@ -479,8 +483,7 @@
      (restclient . t)))
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
-         ("C-c b" . org-iswitchb)
-         ("C-c c" . org-capture)
+         ("C-c c" . counsel-org-capture)
          ("C-c i" . org-capture-inbox)))
 
 ;;------------------------------------------------------------------------------
