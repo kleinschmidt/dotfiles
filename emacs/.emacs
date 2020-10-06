@@ -418,11 +418,11 @@
     (interactive)
     (call-interactively 'org-store-link)
     (org-capture nil "i"))
-  (setq org-agenda-files (list "inbox.org" "projects.org"))
   (setq org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
   (setq org-refile-targets
-        '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")))
+        '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")
+          (nil :maxlevel . 9)))
   (setq org-refile-use-outline-path 'file)
   (setq org-outline-path-complete-in-steps nil)
   ;; log NEXT time with an ACTIVATED time stamp
@@ -442,7 +442,8 @@
             (agenda ""
                     ((org-agenda-skip-function
                       '(org-agenda-skip-entry-if 'deadline))
-                     (org-deadline-warning-days 0)))
+                     (org-deadline-warning-days 0)
+                     (org-agenda-span 1)))
             ;; list of next tasks 
             (todo "NEXT"
                   ((org-agenda-skip-function
@@ -450,18 +451,24 @@
                    (org-agenda-prefix-format "  %i %-12:c [%e] ")
                    (org-agenda-overriding-header "\nTasks\n")))
             ;; deadlines for next week
-            (agenda nil
+            (agenda ""
                     ((org-agenda-entry-types '(:deadline))
                      (org-agenda-format-date "")
                      (org-deadline-warning-days 7)
-                     (org-agenda-skip-function
-                      '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-                     (org-agenda-overriding-header "\nDeadlines")))
+                     ;; (org-agenda-skip-function
+                     ;;  '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+                     (org-agenda-overriding-header "Deadlines")))
             (tags-todo "inbox"
                        ((org-agenda-prefix-format "  %?-12t% s")
                         (org-agenda-overriding-header "Inbox\n")))
             (tags "CLOSED>=\"<today>\""
-                  ((org-agenda-overriding-header "\nCompleted today\n")))))))
+                  ((org-agenda-overriding-header "\nCompleted today\n")))))
+          ("W" "Weekly review"
+           agenda ""
+           ((org-agenda-start-day "-7d")
+            (org-agenda-span 7)
+            (org-agenda-start-on-weekday nil)
+            (org-agenda-start-with-log-mode '(closed))))))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   (org-babel-do-load-languages
