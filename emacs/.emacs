@@ -414,7 +414,7 @@
            "* Note (%a)\n  /Entered on/ %U\n" "\n" "%?")
           ("m" "Meeting" entry
            (file+headline "agenda.org" "Future")
-           "* %? :meeting:\nSCHEDULED: %T"
+           "* %? :meeting:\n%^T"
            :time-prompt t)))
   (defun org-capture-inbox ()
     (interactive)
@@ -459,8 +459,8 @@
                     ((org-agenda-entry-types '(:deadline))
                      (org-agenda-format-date "")
                      (org-deadline-warning-days 7)
-                     ;; (org-agenda-skip-function
-                     ;;  '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+                     (org-agenda-skip-function
+                      '(org-agenda-skip-entry-if 'regexp "\\* DONE"))
                      (org-agenda-overriding-header "Deadlines")))
             (tags-todo "inbox"
                        ((org-agenda-prefix-format "  %?-12t% s")
