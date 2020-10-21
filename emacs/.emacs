@@ -445,7 +445,7 @@
            (;; scheduled things for day
             (agenda ""
                     ((org-agenda-skip-function
-                      '(org-agenda-skip-entry-if 'deadline))
+                      '(org-agenda-skip-entry-if 'deadline 'regexp ":@canceled"))
                      (org-deadline-warning-days 0)
                      (org-agenda-span 1)))
             ;; list of next tasks 
