@@ -472,6 +472,8 @@
            ((org-agenda-start-day "-7d")
             (org-agenda-span 7)
             (org-agenda-start-on-weekday nil)
+            (org-agenda-skip-function
+             '(org-agenda-skip-entry-if 'regexp "\\(TODO\\|NEXT\\)"))
             (org-agenda-start-with-log-mode '(closed))))))
   (add-hook 'org-mode-hook 'auto-fill-mode)
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
