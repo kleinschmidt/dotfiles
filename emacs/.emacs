@@ -471,7 +471,7 @@
            agenda ""
            ((org-agenda-start-day "-7d")
             (org-agenda-span 7)
-            (org-agenda-start-on-weekday nil)
+            (org-agenda-start-on-weekday 1)
             (org-agenda-skip-function
              '(org-agenda-skip-entry-if 'regexp "\\(TODO\\|NEXT\\)"))
             (org-agenda-start-with-log-mode '(closed))))))
