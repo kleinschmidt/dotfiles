@@ -259,6 +259,7 @@
   :bind (("C-c j" . magit-status)))
 
 (use-package forge
+  :ensure t
   :after magit)
 
 ;; AUCTeX fontification
