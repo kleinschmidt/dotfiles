@@ -484,10 +484,18 @@
      (julia . t)
      (jupyter . t)
      (restclient . t)))
+  (defun org-todo-buffer ()
+    "Create new indirect buffer with sparse tree of undone TODO items"
+    (interactive)
+    (clone-indirect-buffer "*org TODO undone*" t)
+    (org-show-todo-tree nil) ; mimics interactive usage
+    (org-remove-occur-highlights)
+    )
   :bind (("C-c a" . org-agenda)
          ("C-c l" . org-store-link)
          ("C-c c" . counsel-org-capture)
-         ("C-c i" . org-capture-inbox)))
+         ("C-c i" . org-capture-inbox)
+         ("C-c t" . org-todo-buffer)))
 
 ;;------------------------------------------------------------------------------
 ;; change font size for current frame
