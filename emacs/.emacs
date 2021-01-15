@@ -249,7 +249,7 @@
   :ensure t)
 
 (use-package ob-restclient
-  :load-path "~/.emacs.d/lisp/ob-restclient.el/"
+  :ensure t
   :after restclient)
 
 
