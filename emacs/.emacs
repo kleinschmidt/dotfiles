@@ -1,6 +1,21 @@
 (unless (getenv "LANG") (setenv "LANG" "en_US.UTF-8"))
 (setq custom-file "~/.emacs.d/customized.el")
 
+;; straight?
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+
 ;; melpa 
 (require 'package)
 (add-to-list 'package-archives
@@ -11,23 +26,13 @@
              '("org" . "http://orgmode.org/elpa/"))
 (package-initialize)
 
-;; (unless (package-installed-p 'quelpa)
-;;   (with-temp-buffer
-;;     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-;;     (eval-buffer)
-;;     (quelpa-self-upgrade)))
 
-;; (quelpa
-;;  '(quelpa-use-package
-;;    :fetcher git
-;;    :url "https://github.com/quelpa/quelpa-use-package.git"))
-;; (eval-when-compile
-;;   (require 'quelpa-use-package))
 
 ;; local ~/emacs.d/lisp/
-(let ((default-directory "~/.emacs.d/lisp/"))
-  (normal-top-level-add-subdirs-to-load-path))
+;; (let ((default-directory "~/.emacs.d/lisp/"))
+;;   (normal-top-level-add-subdirs-to-load-path))
 
+(straight-use-package 'use-package)
 (eval-when-compile
   (require 'use-package))
 
@@ -174,9 +179,12 @@
 
 ;; jupyter integration (mostly for julia)
 (use-package jupyter
-  :ensure nil
+  :straight (jupyter :type git :host github :repo "nnicandro/emacs-jupyter" :branch "fix-219")
   :config
   (setq jupyter-repl-echo-eval-p t))
+
+;; or:
+;; (straight-use-package '(jupyter :local-repo "~/.emacs.d/lisp/emacs-jupyter/"))
 
 ;; julia mode
 (use-package julia-mode
