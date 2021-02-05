@@ -11,6 +11,19 @@
              '("org" . "http://orgmode.org/elpa/"))
 (package-initialize)
 
+;; (unless (package-installed-p 'quelpa)
+;;   (with-temp-buffer
+;;     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+;;     (eval-buffer)
+;;     (quelpa-self-upgrade)))
+
+;; (quelpa
+;;  '(quelpa-use-package
+;;    :fetcher git
+;;    :url "https://github.com/quelpa/quelpa-use-package.git"))
+;; (eval-when-compile
+;;   (require 'quelpa-use-package))
+
 ;; local ~/emacs.d/lisp/
 (let ((default-directory "~/.emacs.d/lisp/"))
   (normal-top-level-add-subdirs-to-load-path))
@@ -154,9 +167,14 @@
   :ensure t
   :requires ess)
 
+;; TODO: once #308 is merged (or some other fix for #219/#287), install this
+;; from MELPA again, but for now install into .emacs.d/lisp/ via
+;; 
+;; gh repo clone nnicandro/emacs-jupyter && cd emacs-jupyter && git checkout origin/fix-219
+
 ;; jupyter integration (mostly for julia)
 (use-package jupyter
-  :ensure t
+  :ensure nil
   :config
   (setq jupyter-repl-echo-eval-p t))
 
