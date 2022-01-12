@@ -448,7 +448,7 @@
     (call-interactively 'org-store-link)
     (org-capture nil "i"))
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
+        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)" "NOPE(x)")))
   (setq org-refile-targets
         '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")
           ("agenda.org" :regexp . "\\(Past\\|Future\\)")
@@ -487,7 +487,7 @@
                      (org-agenda-format-date "")
                      (org-deadline-warning-days 7)
                      (org-agenda-skip-function
-                      '(org-agenda-skip-entry-if 'regexp "\\* DONE"))
+                      '(org-agenda-skip-entry-if 'regexp "\\* \\(DONE\\|NOPE\\)"))
                      (org-agenda-overriding-header "Deadlines")))
             (tags-todo "inbox"
                        ((org-agenda-prefix-format "  %?-12t% s")
