@@ -629,5 +629,9 @@
   :config
   (setq fci-rule-width 3))
 
+(use-package terraform-mode
+  :ensure t
+  :mode ("\\.tf\\'"))
+
 (load custom-file)
 (put 'narrow-to-region 'disabled nil)
