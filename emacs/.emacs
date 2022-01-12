@@ -179,7 +179,7 @@
 
 ;; jupyter integration (mostly for julia)
 (use-package jupyter
-  :straight (jupyter :type git :host github :repo "nnicandro/emacs-jupyter" :branch "fix-219")
+  :straight t
   :config
   (setq jupyter-repl-echo-eval-p t))
 
