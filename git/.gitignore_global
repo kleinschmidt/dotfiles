@@ -55,3 +55,7 @@ Thumbs.db
 *.fls
 *.log
 *.run.xml
+
+# emacs arcana #
+################
+.dir-locals.el

@@ -1,3 +1,6 @@
+get!(ENV, "JULIA_PKG_SERVER", "https://pkg.julialang.org")
+get!(ENV, "JULIA_PKG_SERVER_REGISTRY_PREFERENCE", "eager")
+
 try
     using Revise
 catch e
