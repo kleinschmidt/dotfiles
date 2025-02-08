@@ -7,8 +7,6 @@
 [push]
 	default = matching
 
-[url "git@github.com:"]
-	insteadof = "https://github.com/"
 [github]
 	user = kleinschmidt
 [filter "lfs"]
@@ -17,3 +15,7 @@
 	required = true
 [alias]
 	graph = log --oneline --decorate --graph
+[credential "https://github.com"]
+	helper = !/usr/bin/env gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = !/usr/bin/env gh auth git-credential
