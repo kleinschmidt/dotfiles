@@ -288,6 +288,13 @@
   :ensure t
   :after magit)
 
+;; Set up TRAMP to re-use existing SSH connections to servers
+(customize-set-variable
+ 'tramp-ssh-controlmaster-options
+ (concat
+   "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
+   "-o ControlMaster=auto -o ControlPersist=yes"))
+
 ;; AUCTeX fontification
 ;; apacite citation macros
 (setq font-latex-match-reference-keywords
