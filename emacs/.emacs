@@ -691,6 +691,8 @@
       (clang-format-buffer)))
   :bind (("C-c f" . my-clang-format)))
 
+(use-package vterm
+    :ensure t)
 
 (load custom-file)
 (put 'narrow-to-region 'disabled nil)
