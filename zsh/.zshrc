@@ -5,6 +5,8 @@ SAVEHIST=1000
 
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
 
+setopt interactive_comments
+
 # need to get this set before `compinit` to use homebrew's fpath
 if [ -d "/opt/homebrew" ]; then
     export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
@@ -58,6 +60,7 @@ fi
 # fi
 export WANDB_API_KEY="op://Private/wandb api key/password"
 [[ /usr/bin/kubectl ]] && source <(kubectl completion zsh)
+alias k=kubectl
 
 export AWS_REGION=us-east-2
 export AWS_DEFAULT_REGION=us-east-2
@@ -66,6 +69,14 @@ export AWS_PROFILE="dkleinschmidt"
 
 if [ -f ~/clipboard.zsh ]; then
     source ~/clipboard.zsh
+fi
+
+if [ -f ~/vterm.zsh ]; then
+    source ~/vterm.zsh
+fi
+
+if [ -d "${HOME}/go/bin" ]; then
+    export PATH="${HOME}/go/bin:${PATH}"
 fi
 
 export NVM_DIR="$HOME/.nvm"
@@ -83,3 +94,11 @@ eval "$(pyenv init -)"
 
 # poetry
 export PATH="/Users/dkleinschmidt/.local/bin:$PATH"
+
+export PATH="${HOME}/.docker/bin:${PATH}"
+
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/dkleinschmidt/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions

@@ -59,3 +59,7 @@ Thumbs.db
 # emacs arcana #
 ################
 .dir-locals.el
+
+# my own notes #
+################
+_notes*.md

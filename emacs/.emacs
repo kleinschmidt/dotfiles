@@ -103,7 +103,6 @@
          ("C-x C-f" . counsel-find-file)
          ("C-c k" . counsel-ag)))
 
-
 (use-package ace-jump-mode
   :ensure t
   :bind (("C-." . ace-jump-mode)
@@ -122,6 +121,13 @@
   :bind (:map term-raw-map
               ("M-." . ace-window)
               ("C-<backspace>" . term-send-backspace)))
+
+(use-package vterm
+  :ensure t
+  :bind (:map vterm-mode-map ("M-." . ace-window))
+  :config
+  (add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
+  (setq vterm-kill-buffer-on-exit nil))
 
 (use-package multiple-cursors
   :ensure t
@@ -188,14 +194,37 @@
 ;; or:
 ;; (straight-use-package '(jupyter :local-repo "~/.emacs.d/lisp/emacs-jupyter/"))
 
+(use-package julia-vterm
+  :ensure t
+  :hook (julia-mode . julia-vterm-mode)
+  :bind (:map julia-vterm-mode-map
+        ("C-c C-s" . (lambda () (interactive) (setq-default
+                                 julia-vterm-session
+                                 (completing-read
+                                  "Session name: "
+                                  (julia-vterm-repl-list-sessions)
+                                  nil nil nil nil
+				  (julia-vterm-repl-session-name (julia-vterm-fellow-repl-buffer))))))))
+
+
+(setq project-vc-extra-root-markers '("Project.toml" "JuliaProject.toml"))
+
+(use-package eglot
+  :config
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider)))
+
+(use-package eglot-jl
+  :ensure t
+  :requires eglot
+  :hook (julia-mode . eglot-ensure)
+  :config (eglot-jl-init))
+
 ;; julia mode
 (use-package julia-mode
-  :ensure julia-repl
-  :ensure fill-column-indicator
   :mode "\\.jl\\'"
   :config
-  (add-hook 'julia-mode-hook 'julia-repl-mode)
-  (add-hook 'julia-mode-hook (lambda () (setq show-trailing-whitespace t))))
+  (add-hook 'julia-mode-hook (lambda () (setq show-trailing-whitespace t)))
+  (add-hook 'julia-mode-hook (lambda () (setq fill-column 92))))
 
 (define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
   "Julia Doctest mode")
@@ -220,7 +249,6 @@
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-  (add-hook 'markdown-mode-hook 'auto-fill-mode)
   ;; predicate to prevent flyspell checking in code blocks (inline and
   ;; fenced)
   ;; http://emacs.stackexchange.com/questions/20230/how-to-make-flyspell-ignore-code-blocks-in-markdown
@@ -245,12 +273,11 @@
     (interactive)
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
-      (reftex-citation)))
-  :bind (:map markdown-mode-map
-              ("M-<right>" . markdown-demote)
-              ("M-<left>" . markdown-promote)
-              ("M-<up>" . markdown-move-up)
-              ("M-<down>" . markdown-move-down)))
+      (reftex-citation))))
+
+;; (use-package markdown-ts-mode
+;;   :ensure t
+;;   :mode ("\\.md\\'" . markdown-ts-mode))
 
 (defun grunt ()
   "Run grunt"
@@ -276,6 +303,22 @@
   :bind (:map js2-mode-map
          ("C-c g" . grunt)))
 ;; (add-hook 'js2-mode-hook (lambda () (electric-indent-local-mode -1)))
+
+(use-package js
+  :bind (:map js-json-mode-map
+              ("M-." . ace-window)))
+
+(use-package json-mode
+  :ensure t
+  :mode "\\.json?\\'"
+  :config
+  (setq js-indent-level 2)
+  :bind (:map json-mode-map
+              ("M-." . ace-window)))
+
+(use-package graphql-mode
+  :ensure t
+  :mode "\\.graphql?\\'")
 
 (use-package restclient
   :ensure t)
@@ -603,19 +646,36 @@
 
 (define-key global-map "\M-Q" 'unfill-paragraph)
 
+(use-package flymake-actionlint
+  :ensure t
+  :hook (yaml-mode . flymake-actionlint-action-load-when-actions-file))
+
+(use-package flymake-shellcheck
+  :ensure t
+  :hook (sh-mode . flymake-shellcheck-load))
+
 (use-package yaml-mode
   :ensure t
-  :mode "\\.[yY][aA]?[mM][lL]\\'")
-
-(use-package projectile
-  :ensure t)
-
-(use-package counsel-projectile
-  :ensure t
-  :demand t
+  :mode "\\.[yY][aA]?[mM][lL]\\'"
   :config
-  (counsel-projectile-mode)
-  :bind ("C-c p" . projectile-command-map))
+  (add-hook 'yaml-mode-hook (lambda () (auto-fill-mode -1))))
+  ;; (add-hook 'yaml-mode-hook #'flymake-actionlint-action-load-when-actions-file))
+
+;; (use-package yaml-ts-mode
+;;   :ensure t
+;;   :mode "\\.[yY][aA]?[mM][lL]\\'"
+;;   :config
+;;   (add-hook 'yaml-ts-mode-hook (lambda () (auto-fill-mode -1))))
+
+;; (use-package projectile
+;;   :ensure t)
+
+;; (use-package counsel-projectile
+;;   :ensure t
+;;   :demand t
+;;   :config
+;;   (counsel-projectile-mode)
+;;   :bind ("C-c p" . projectile-command-map))
 
 (use-package ag
   :ensure t
@@ -627,7 +687,9 @@
 (use-package wgrep-ag
   :ensure t)
 (use-package wgrep
-  :ensure t)
+  :ensure t
+  :config
+  (setq wgrep-auto-save-buffer t))
 
 (use-package color-theme-sanityinc-tomorrow
   :ensure t)
@@ -640,6 +702,7 @@
 
 (use-package fill-column-indicator
   :ensure t
+  :hook (prog-mode . display-fill-column-indicator-mode)
   :config
   (setq fci-rule-width 3))
 
@@ -684,23 +747,64 @@
       (clang-format-buffer)))
   :bind (("C-c f" . my-clang-format)))
 
+;; (use-package sql-indent
+;;   :ensure t
+;;   :hook (sql-mode . sqlind-minor-mode))
+
+(use-package reformatter
+  :ensure t)
+
+(use-package go-ts-mode
+  :ensure t
+  :mode "\\.go\\'"
+  :config
+  (reformatter-define go-format
+    :program "gofmt")
+  (reformatter-define go-imports
+    :program "goimports")
+  (add-hook 'go-ts-mode-hook (lambda () (setq tab-width 4)))
+  (setq go-ts-mode-indent-offset 4)
+  :hook
+  (go-ts-mode . go-format-on-save-mode)
+  (go-ts-mode . go-imports-on-save-mode)
+  (go-ts-mode . eglot-ensure))
+
+(use-package python-mode
+  :ensure t
+  :config
+  (reformatter-define black-format
+    :program "black"
+    :args '("-"))
+  :hook
+  (python-mode-hook . black-format-on-save-mode))
 
 (load custom-file)
 (put 'narrow-to-region 'disabled nil)
+
+(use-package typescript-ts-mode
+  :ensure t
+  :mode (("\\.ts\\'" . typescript-ts-mode)
+         ("\\.tsx\\'" . tsx-ts-mode))
+  :config
+  (add-to-list 'eglot-server-programs '(typescript-mode . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(tsx-mode . ("typescript-language-server" "--stdio")))
+  )
 
 (setq treesit-language-source-alist
    '((bash "https://github.com/tree-sitter/tree-sitter-bash")
      (cmake "https://github.com/uyha/tree-sitter-cmake")
      (css "https://github.com/tree-sitter/tree-sitter-css")
      (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (go "https://github.com/tree-sitter/tree-sitter-go" "v0.19.1")
+     (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
      (html "https://github.com/tree-sitter/tree-sitter-html")
      (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
      (json "https://github.com/tree-sitter/tree-sitter-json")
      (make "https://github.com/alemuller/tree-sitter-make")
-     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown" "split_parser" "tree-sitter-markdown/src")
+     (markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown" "split_parser" "tree-sitter-markdown-inline/src")
      (python "https://github.com/tree-sitter/tree-sitter-python")
      (toml "https://github.com/tree-sitter/tree-sitter-toml")
      (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
      (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
