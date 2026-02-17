@@ -43,8 +43,8 @@
                                       '((vertical-scroll-bars . nil)
                                         (horizontal-scroll-bars . nil)))))
 ;; remove scroll bars on first window to open
-(scroll-bar-mode 0)
-(menu-bar-mode 0)
+(scroll-bar-mode -1)
+(menu-bar-mode -1)
 
 ;; tabs = evil
 (setq-default indent-tabs-mode nil)
