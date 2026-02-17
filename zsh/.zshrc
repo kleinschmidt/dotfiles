@@ -27,16 +27,23 @@ zstyle ':completion:*' rehash true matcher-list '' 'm:{a-z}={A-Za-z}'
 
 autoload promptinit; promptinit
 
-if command -v brew &> /dev/null; then
-    source $(brew --prefix)/opt/spaceship/spaceship.zsh
+if command -v starship &> /dev/null; then
+    eval "$(starship init zsh)"
 else
-    source "$HOME/.zsh/spaceship/spaceship.zsh"
+    if command -v brew &> /dev/null; then
+        spaceship="$(brew --prefix)/opt/spaceship/spaceship.zsh"
+    else
+        spaceship="$HOME/.zsh/spaceship/spaceship.zsh"
+    fi
+    if [[ -f "$spaceship" ]]; then
+        source "$spaceship"
+        # SPACESHIP customization: nerd fonts
+        export SPACESHIP_JULIA_SYMBOL=" "
+        export SPACESHIP_PACKAGE_SYMBOL=" "
+        export SPACESHIP_DOCKER_SYMBOL=" "
+    fi
 fi
 
-# SPACESHIP customization: nerd fonts
-export SPACESHIP_JULIA_SYMBOL=" "
-export SPACESHIP_PACKAGE_SYMBOL=" "
-export SPACESHIP_DOCKER_SYMBOL=" "
 
 export EDITOR="emacsclient -t"
 export VISUAL="emacsclient -a emacs"
@@ -55,9 +62,9 @@ if [ -f /usr/share/zsh/plugins/zsh-dircolors-solarized/zsh-dircolors-solarized.z
    zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 fi
 
-# if [ -f ~/.zshrc_local ]; then
-#     source .zshrc_local
-# fi
+if [[ -f "$HOME/.zshrc_local" ]]; then
+    source "$HOME/.zshrc_local"
+fi
 export WANDB_API_KEY="op://Private/wandb api key/password"
 [[ /usr/bin/kubectl ]] && source <(kubectl completion zsh)
 alias k=kubectl
