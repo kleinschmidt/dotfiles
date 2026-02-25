@@ -697,6 +697,12 @@
 (use-package color-theme-sanityinc-solarized
   :ensure t)
 
+(use-package auto-dark
+  :ensure t
+  :custom
+  (auto-dark-themes '((solarized-dark) (solarized-light)))
+  :init (auto-dark-mode))
+
 (use-package csv-mode
   :ensure t)
 
