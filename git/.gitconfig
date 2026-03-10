@@ -21,3 +21,5 @@
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [rerere]
 	enabled = true
+[url "https://github.com/"]
+	insteadOf = git@github.com:

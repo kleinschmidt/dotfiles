@@ -78,7 +78,7 @@ if [ -f ~/clipboard.zsh ]; then
     source ~/clipboard.zsh
 fi
 
-if [ -f ~/vterm.zsh ]; then
+if [[ "$INSIDE_EMACS" = 'vterm' ]] && [[ -f "${HOME}/vterm.zsh" ]]; then
     source ~/vterm.zsh
 fi
 
