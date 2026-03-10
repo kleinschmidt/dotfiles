@@ -2,28 +2,22 @@
 (setq custom-file "~/.emacs.d/customized.el")
 
 ;; straight?
+(setq straight-use-package-by-default t)
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
          'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
-;; melpa
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(add-to-list 'package-archives
-             '("org" . "http://orgmode.org/elpa/"))
-(package-initialize)
 
 ;; local ~/emacs.d/lisp/
 ;; (let ((default-directory "~/.emacs.d/lisp/"))
@@ -31,6 +25,9 @@
 (straight-use-package 'use-package)
 (eval-when-compile
   (require 'use-package))
+
+(use-package project)
+(use-package flymake)
 
 (tool-bar-mode -1)
 
@@ -70,17 +67,14 @@
 (global-set-key (kbd "C-x C-m") 'compile)
 
 ;; solarized theme
-(use-package solarized-theme
-  :ensure t)
+(use-package solarized-theme)
 
 ;; expand-region
 (use-package expand-region
-  :ensure t
   :bind ("C-=" . er/expand-region))
 
 ;; ivy
 (use-package ivy
-  :ensure t
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
@@ -104,14 +98,12 @@
          ("C-c k" . counsel-ag)))
 
 (use-package ace-jump-mode
-  :ensure t
   :bind (("C-." . ace-jump-mode)
          ("C-," . ace-jump-mode-pop-mark))
   :config
   (ace-jump-mode-enable-mark-sync))
 
 (use-package ace-window
-  :ensure t
   :bind ("M-." . ace-window)
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
@@ -123,14 +115,12 @@
               ("C-<backspace>" . term-send-backspace)))
 
 (use-package vterm
-  :ensure t
   :bind (:map vterm-mode-map ("M-." . ace-window))
   :config
   (add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
   (setq vterm-kill-buffer-on-exit nil))
 
 (use-package multiple-cursors
-  :ensure t
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-c C-<" . mc/mark-all-like-this)
@@ -151,7 +141,6 @@
 
 ;; ess
 (use-package ess
-  :ensure t
   :ensure julia-mode
   :init
   (require 'ess-site)
@@ -177,7 +166,6 @@
   :bind ("C-c C-m" . ess-pipe))
 
 (use-package stan-mode
-  :ensure t
   :requires ess)
 
 ;; TODO: once #308 is merged (or some other fix for #219/#287), install this
@@ -195,7 +183,6 @@
 ;; (straight-use-package '(jupyter :local-repo "~/.emacs.d/lisp/emacs-jupyter/"))
 
 (use-package julia-vterm
-  :ensure t
   :hook (julia-mode . julia-vterm-mode)
   :bind (:map julia-vterm-mode-map
         ("C-c C-s" . (lambda () (interactive) (setq-default
@@ -214,9 +201,11 @@
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider)))
 
 (use-package eglot-jl
-  :ensure t
+  :straight (eglot-jl :type git :host github :repo "non-Jedi/eglot-jl"
+                      :fork (:host github
+                             :repo "kleinschmidt/eglot-jl"))
   :requires eglot
-  :hook (julia-mode . eglot-ensure)
+  ;; :hook (julia-mode . eglot-ensure)
   :config (eglot-jl-init))
 
 ;; julia mode
@@ -238,13 +227,11 @@
     (adaptive-wrap-prefix-mode (if visual-line-mode 1 -1)))
   (add-hook 'visual-line-mode-hook 'my-activate-adaptive-wrap-prefix-mode))
 
-(use-package adaptive-wrap
-  :ensure t)
+(use-package adaptive-wrap)
 
 ;;; markdown mode
 (use-package markdown-mode
-  :ensure t
-  :pin melpa-stable
+  ;; :pin melpa-stable
   :config
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
@@ -276,7 +263,6 @@
       (reftex-citation))))
 
 ;; (use-package markdown-ts-mode
-;;   :ensure t
 ;;   :mode ("\\.md\\'" . markdown-ts-mode))
 
 (defun grunt ()
@@ -296,7 +282,6 @@
 
 ;; disable electric indent in js2-mode, and make default for .js
 (use-package js2-mode
-  :ensure t
   :mode "\\.js?\\'"
   :config
   (setq js2-basic-offset 2)
@@ -309,7 +294,6 @@
               ("M-." . ace-window)))
 
 (use-package json-mode
-  :ensure t
   :mode "\\.json?\\'"
   :config
   (setq js-indent-level 2)
@@ -317,28 +301,22 @@
               ("M-." . ace-window)))
 
 (use-package graphql-mode
-  :ensure t
   :mode "\\.graphql?\\'")
 
-(use-package restclient
-  :ensure t)
+(use-package restclient)
 
 (use-package ob-restclient
-  :ensure t
   :after restclient)
 
 
 ;; Bind magit-status to C-c i
 (use-package magit
-  :ensure t
   :bind (("C-c j" . magit-status)))
 
 (use-package forge
-  :ensure t
   :after magit)
 
 (use-package git-link
-  :ensure t
   :bind (("C-c g l" . git-link))
   :config
   (setq git-link-use-commit t))
@@ -372,7 +350,6 @@
                     "Documents/papers/library-clean.bib")))
 
 (use-package ivy-bibtex
-  :ensure t
   :config
   (setq bibtex-completion-bibliography
         '("~/Documents/papers/zotero.bib"))
@@ -386,7 +363,6 @@
 
 ;; Use latexmk with auctex (package installed via MELPA)
 (use-package auctex-latexmk
-  :ensure t
   :config
   (auctex-latexmk-setup))
 
@@ -394,13 +370,11 @@
 ;; (require 'matlab-mode)
 
 ;; wc-mode
-(use-package wc-mode
-  :ensure t)
+(use-package wc-mode)
 
 
 ;; web-mode/swig
 (use-package web-mode
-  :ensure t
   :mode ("\\.html?\\'"
          "\\.swig\\'")
   :config
@@ -410,11 +384,9 @@
 
 ;; polymode for r markdown
 (use-package polymode
-  :ensure t
   :mode (("\\.org\\'" . org-mode)))
 
 (use-package poly-markdown
-  :ensure t
   ;; poly-markdown-mode auto-detects chunk types.
   :mode (("\\.jmd\\'" . poly-markdown-mode)
          ("\\.Rmd" . poly-markdown-mode)))
@@ -616,7 +588,6 @@
 ;; copy over PATH variable from the shell
 
 (use-package exec-path-from-shell
-  :ensure t
   :config
   (setq exec-path-from-shell-check-startup-files nil)
   (exec-path-from-shell-initialize)
@@ -632,7 +603,6 @@
 (setq compilation-scroll-output 'first-error)
 
 (use-package pkgbuild-mode
-  :ensure t
   :mode "PKGBUILD\\'")
 
 ;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
@@ -647,89 +617,71 @@
 (define-key global-map "\M-Q" 'unfill-paragraph)
 
 (use-package flymake-actionlint
-  :ensure t
   :hook (yaml-mode . flymake-actionlint-action-load-when-actions-file))
 
 (use-package flymake-shellcheck
-  :ensure t
   :hook (sh-mode . flymake-shellcheck-load))
 
 (use-package yaml-mode
-  :ensure t
   :mode "\\.[yY][aA]?[mM][lL]\\'"
   :config
   (add-hook 'yaml-mode-hook (lambda () (auto-fill-mode -1))))
   ;; (add-hook 'yaml-mode-hook #'flymake-actionlint-action-load-when-actions-file))
 
 ;; (use-package yaml-ts-mode
-;;   :ensure t
 ;;   :mode "\\.[yY][aA]?[mM][lL]\\'"
 ;;   :config
 ;;   (add-hook 'yaml-ts-mode-hook (lambda () (auto-fill-mode -1))))
 
-;; (use-package projectile
-;;   :ensure t)
+;; (use-package projectile)
 
 ;; (use-package counsel-projectile
-;;   :ensure t
 ;;   :demand t
 ;;   :config
 ;;   (counsel-projectile-mode)
 ;;   :bind ("C-c p" . projectile-command-map))
 
 (use-package ag
-  :ensure t
   :requires wgrep-ag
   :bind (("C-c K" . ag)
          :map ag-mode-map
          ("C-c C-p" . wgrep-change-to-wgrep-mode)))
 
-(use-package wgrep-ag
-  :ensure t)
+(use-package wgrep-ag)
 (use-package wgrep
-  :ensure t
   :config
   (setq wgrep-auto-save-buffer t))
 
-(use-package color-theme-sanityinc-tomorrow
-  :ensure t)
+(use-package color-theme-sanityinc-tomorrow)
 
-(use-package color-theme-sanityinc-solarized
-  :ensure t)
+(use-package color-theme-sanityinc-solarized)
 
 (use-package auto-dark
-  :ensure t
   :custom
   (auto-dark-themes '((solarized-dark) (solarized-light)))
   :init (auto-dark-mode))
 
-(use-package csv-mode
-  :ensure t)
+(use-package csv-mode)
 
 (use-package fill-column-indicator
-  :ensure t
   :hook (prog-mode . display-fill-column-indicator-mode)
   :config
   (setq fci-rule-width 3))
 
 (use-package terraform-mode
-  :ensure t
   :mode ("\\.tf\\'")
+  :custom (terraform-format-on-save t)
   :hook
   (terraform-mode . terraform-format-on-save-mode))
 
 (use-package dockerfile-mode
-  :ensure t
   :mode ("[Dd]ockerfile"))
 
-(use-package olivetti
-  :ensure t)
+(use-package olivetti)
 
-(use-package bazel
-  :ensure t)
+(use-package bazel)
 
-(use-package protobuf-mode
-  :ensure t)
+(use-package protobuf-mode)
 
 ;; (defconst my-cc-style
 ;;   '("gnu"
@@ -740,11 +692,9 @@
   (c-set-offset 'innamespace [0]))
 (add-hook 'c++-mode-hook 'no-namespace-indent)
 
-(use-package cython-mode
-  :ensure t)
+(use-package cython-mode)
 
 (use-package clang-format
-  :ensure t
   :config
   (defun my-clang-format (arg)
     (interactive "P")
@@ -754,14 +704,11 @@
   :bind (("C-c f" . my-clang-format)))
 
 ;; (use-package sql-indent
-;;   :ensure t
 ;;   :hook (sql-mode . sqlind-minor-mode))
 
-(use-package reformatter
-  :ensure t)
+(use-package reformatter)
 
 (use-package go-ts-mode
-  :ensure t
   :mode "\\.go\\'"
   :config
   (reformatter-define go-format
@@ -776,7 +723,6 @@
   (go-ts-mode . eglot-ensure))
 
 (use-package python-mode
-  :ensure t
   :config
   (reformatter-define black-format
     :program "black"
@@ -788,7 +734,6 @@
 (put 'narrow-to-region 'disabled nil)
 
 (use-package typescript-ts-mode
-  :ensure t
   :mode (("\\.ts\\'" . typescript-ts-mode)
          ("\\.tsx\\'" . tsx-ts-mode))
   :config
