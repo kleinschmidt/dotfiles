@@ -71,7 +71,8 @@
 
 ;; expand-region
 (use-package expand-region
-  :bind ("C-=" . er/expand-region))
+  :bind (("C-=" . er/expand-region)
+         ("C--" . er/contract-region)))
 
 ;; ivy
 (use-package ivy
@@ -98,8 +99,7 @@
          ("C-c k" . counsel-ag)))
 
 (use-package ace-jump-mode
-  :bind (("C-." . ace-jump-mode)
-         ("C-," . ace-jump-mode-pop-mark))
+  :bind (("C-." . ace-jump-mode))
   :config
   (ace-jump-mode-enable-mark-sync))
 
@@ -119,6 +119,25 @@
   :config
   (add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
   (setq vterm-kill-buffer-on-exit nil))
+
+(defun project-shell-vterm ()
+  "Start an inferior vterm shell in the current project's root directory.
+If a buffer already exists for running a shell in the project's root,
+switch to it.  Otherwise, create a new shell buffer.
+With \\[universal-argument] prefix arg, create a new inferior shell buffer even
+if one already exists."
+  (interactive)
+  (require 'comint)
+  (let* ((default-directory (project-root (project-current t)))
+         (default-project-shell-name (project-prefixed-buffer-name "shell"))
+         (shell-buffer (get-buffer default-project-shell-name)))
+    (if (and shell-buffer (not current-prefix-arg))
+        (if (comint-check-proc shell-buffer)
+            (pop-to-buffer shell-buffer (bound-and-true-p display-comint-buffer-action))
+          (vterm shell-buffer))
+      (vterm (generate-new-buffer-name default-project-shell-name)))))
+
+(advice-add 'project-shell :override #'project-shell-vterm)
 
 (use-package multiple-cursors
   :bind (("C->" . mc/mark-next-like-this)
@@ -185,35 +204,48 @@
 (use-package julia-vterm
   :hook (julia-mode . julia-vterm-mode)
   :bind (:map julia-vterm-mode-map
-        ("C-c C-s" . (lambda () (interactive) (setq-default
-                                 julia-vterm-session
-                                 (completing-read
-                                  "Session name: "
-                                  (julia-vterm-repl-list-sessions)
-                                  nil nil nil nil
-				  (julia-vterm-repl-session-name (julia-vterm-fellow-repl-buffer))))))))
-
+              ("C-c C-s" . (lambda ()
+                             (interactive)
+                             (setq-default julia-vterm-session
+                              (completing-read "Session name: "
+                               (julia-vterm-repl-list-sessions)
+                               nil nil nil nil
+			       (julia-vterm-repl-session-name (julia-vterm-fellow-repl-buffer))))
+                             (setq julia-vterm-fellow-repl-buffer nil)))))
 
 (setq project-vc-extra-root-markers '("Project.toml" "JuliaProject.toml"))
 
 (use-package eglot
   :config
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider)))
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (setq eglot-code-action-indications '(eldoc-hint)) ;; remove 'margin 
+  (add-to-list 'eglot-server-programs
+               '(((julia-mode :language-id "julia")
+                  (julia-ts-mode :language-id "julia"))
+                 "jetls"
+                 "serve"
+                 "--socket"
+                 :autoport)))
 
-(use-package eglot-jl
-  :straight (eglot-jl :type git :host github :repo "non-Jedi/eglot-jl"
-                      :fork (:host github
-                             :repo "kleinschmidt/eglot-jl"))
-  :requires eglot
-  ;; :hook (julia-mode . eglot-ensure)
-  :config (eglot-jl-init))
+;; (use-package eglot-jl
+;;   :straight (eglot-jl :type git :host github :repo "non-Jedi/eglot-jl"
+;;                       :fork (:host github
+;;                              :repo "kleinschmidt/eglot-jl"))
+;;   :requires eglot
+;;   ;; :hook (julia-mode . eglot-ensure)
+;;   :config (eglot-jl-init))
 
 ;; julia mode
-(use-package julia-mode
+;; (use-package julia-mode
+;;   :mode "\\.jl\\'"
+;;   :config
+;;   (add-hook 'julia-mode-hook (lambda () (setq show-trailing-whitespace t)))
+;;   (add-hook 'julia-mode-hook (lambda () (setq fill-column 92))))
+
+(use-package julia-ts-mode
   :mode "\\.jl\\'"
-  :config
-  (add-hook 'julia-mode-hook (lambda () (setq show-trailing-whitespace t)))
-  (add-hook 'julia-mode-hook (lambda () (setq fill-column 92))))
+  :hook ((julia-ts-mode . (lambda () (setq show-trailing-whitespace t)))
+         (julia-ts-mode . (lambda () (setq fill-column 92)))))
 
 (define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
   "Julia Doctest mode")
@@ -426,7 +458,6 @@
 
 ;; org mode prettification
 (use-package org
-  :ensure org-bullets
   :ensure org-plus-contrib
   :ensure counsel
   :config
@@ -445,7 +476,6 @@
                             `(org-level-8 ((t (,@headline))))
                             )
     )
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
   (setq org-hide-emphasis-markers nil)
   (setq org-directory "~/work/notes/")
   (setq org-capture-templates
@@ -596,7 +626,10 @@
                                         "LOLCOMMITS_STEALTH"
                                         "LOLCOMMITS_DEVICE"
                                         "AWS_PROFILE"
-                                        "AWS_DEFAULT_REGION")))
+                                        "AWS_DEFAULT_REGION"
+                                        "JULIA_PKG_SERVER"
+                                        "JULIA_PKG_SERVER_REGISTRY_PREFERENCE"
+                                        "JULIA_PKG_USE_CLI_GIT")))
 
 
 ;; auto-follow compilation buffer, stopping at first error
@@ -617,6 +650,7 @@
 (define-key global-map "\M-Q" 'unfill-paragraph)
 
 (use-package flymake-actionlint
+  :straight (:host github :repo "kleinschmidt/flymake-actionlint")
   :hook (yaml-mode . flymake-actionlint-action-load-when-actions-file))
 
 (use-package flymake-shellcheck
@@ -672,10 +706,12 @@
   :mode ("\\.tf\\'")
   :custom (terraform-format-on-save t)
   :hook
-  (terraform-mode . terraform-format-on-save-mode))
+  (terraform-mode . terraform-format-on-save-mode)
+  (terraform-mode . eglot-ensure))
 
-(use-package dockerfile-mode
-  :mode ("[Dd]ockerfile"))
+(use-package dockerfile-ts-mode
+  :mode ("[Dd]ockerfile")
+  :hook (dockerfile-ts-mode . eglot-ensure))
 
 (use-package olivetti)
 
@@ -758,4 +794,7 @@
      (toml "https://github.com/tree-sitter/tree-sitter-toml")
      (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
      (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
-     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+     (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")))
+
+(use-package el2org)

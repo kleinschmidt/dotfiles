@@ -104,8 +104,14 @@ export PATH="/Users/dkleinschmidt/.local/bin:$PATH"
 
 export PATH="${HOME}/.docker/bin:${PATH}"
 
+export PATH="${HOME}/.julia/bin:${PATH}"
+
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/dkleinschmidt/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 # End of Docker CLI completions
+
+if [[ -n $(command -v gem) ]]; then
+    export PATH="${PATH}:$(gem environment gemdir)/bin:$(gem environment user_gemdir)/bin"
+fi

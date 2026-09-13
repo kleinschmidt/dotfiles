@@ -23,3 +23,5 @@
 	enabled = true
 [url "https://github.com/"]
 	insteadOf = git@github.com:
+[pull]
+	rebase = false
