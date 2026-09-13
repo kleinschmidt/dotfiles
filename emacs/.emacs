@@ -28,8 +28,6 @@
              '("org" . "http://orgmode.org/elpa/"))
 (package-initialize)
 
-
-
 ;; local ~/emacs.d/lisp/
 ;; (let ((default-directory "~/.emacs.d/lisp/"))
 ;;   (normal-top-level-add-subdirs-to-load-path))
@@ -67,6 +65,34 @@
 
 ;; compile with C-x C-m
 (global-set-key (kbd "C-x C-m") 'compile)
+
+(use-package treesit
+  :config
+  (setq treesit-language-source-alist
+        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (cmake "https://github.com/uyha/tree-sitter-cmake")
+          (css "https://github.com/tree-sitter/tree-sitter-css")
+          (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+          (go "https://github.com/tree-sitter/tree-sitter-go")
+          (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+          (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+          (html "https://github.com/tree-sitter/tree-sitter-html")
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+          (json "https://github.com/tree-sitter/tree-sitter-json")
+          (make "https://github.com/alemuller/tree-sitter-make")
+          (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+          (python "https://github.com/tree-sitter/tree-sitter-python")
+          (toml "https://github.com/tree-sitter/tree-sitter-toml")
+          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
+
+(use-package vterm
+  :ensure t
+  :bind (:map vterm-mode-map ("M-." . ace-window))
+  :config
+  (add-to-list 'vterm-eval-cmds
+               '("update-pwd" (lambda (path) (setq default-directory path)))))
 
 ;; solarized theme
 (use-package solarized-theme
@@ -132,7 +158,7 @@
 
 ;; pdf-tools
 (use-package pdf-tools
-  :ensure t
+  :straight t
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :init
   (pdf-tools-install)
@@ -181,7 +207,7 @@
 
 ;; jupyter integration (mostly for julia)
 (use-package jupyter
-  :straight (jupyter :type git :host github :repo "nnicandro/emacs-jupyter" :branch "fix-219")
+  :straight t
   :config
   (setq jupyter-repl-echo-eval-p t))
 
@@ -216,7 +242,7 @@
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-  (add-hook 'markdown-mode-hook 'auto-fill-mode)
+  ;; (add-hook 'markdown-mode-hook 'auto-fill-mode)
   ;; predicate to prevent flyspell checking in code blocks (inline and
   ;; fenced)
   ;; http://emacs.stackexchange.com/questions/20230/how-to-make-flyspell-ignore-code-blocks-in-markdown
@@ -289,6 +315,56 @@
 (use-package forge
   :ensure t
   :after magit)
+
+;; =============================================================================
+;; use gh-cli as auth-source for forge to workaround forbidden PAT access to organization
+;; -----------------------------------------------------------------------------
+
+;; https://github.com/magit/forge/discussions/544
+
+(cl-defun auth-source-ghcli-search (&rest spec
+                                    &key backend require
+                                    type max host user port
+                                    &allow-other-keys)
+  "Given a property list SPEC, return search matches from the `:backend'.
+See `auth-source-search' for details on SPEC."
+  ;; just in case, check that the type is correct (null or same as the backend)
+  (cl-assert (or (null type) (eq type (oref backend type)))
+             t "Invalid GH CLI search: %s %s")
+
+  (when-let* ((hostname (string-remove-prefix "api." host))
+         ;; split ghub--ident again
+         (ghub_ident (split-string (or user "") "\\^"))
+         (username (car ghub_ident))
+         (package (cadr ghub_ident))
+         (cmd (format "gh auth token --hostname '%s'" hostname))
+         (token (when (string= package "forge") (string-trim-right (shell-command-to-string cmd))))
+         (retval (list
+                  :host hostname
+                  :user username
+                  :secret token)))
+        (auth-source-do-debug  "auth-source-ghcli: return %s as final result (plus hidden password)"
+                                    (seq-subseq retval 0 -2)) ;; remove password
+        (list retval)))
+
+(defvar auth-source-ghcli-backend
+  (auth-source-backend
+   :source "." ;; not used
+   :type 'gh-cli
+   :search-function #'auth-source-ghcli-search)
+  "Auth-source backend for GH CLI.")
+
+(defun auth-source-ghcli-backend-parse (entry)
+  "Create a GH CLI auth-source backend from ENTRY."
+  (when (eq entry 'gh-cli)
+    (auth-source-backend-parse-parameters entry auth-source-ghcli-backend)))
+
+(if (boundp 'auth-source-backend-parser-functions)
+    (add-hook 'auth-source-backend-parser-functions #'auth-source-ghcli-backend-parse)
+  (advice-add 'auth-source-backend-parse :before-until #'auth-source-ghcli-backend-parse))
+
+(add-to-list 'auth-sources 'gh-cli)
+;; end gh-cli auth-source
 
 ;; AUCTeX fontification
 ;; apacite citation macros
@@ -399,7 +475,7 @@
 ;; smerge command prefix to C-c v
 (setq smerge-command-prefix "\C-cv")
 
-;; org mode prettification
+;; org mode
 (use-package org
   :ensure org-bullets
   :ensure org-plus-contrib
@@ -450,7 +526,7 @@
     (call-interactively 'org-store-link)
     (org-capture nil "i"))
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
+        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "NOPE(x)" "DONE(d)")))
   (setq org-refile-targets
         '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")
           ("agenda.org" :regexp . "\\(Past\\|Future\\)")
@@ -630,6 +706,28 @@
   :ensure t
   :config
   (setq fci-rule-width 3))
+
+(use-package terraform-mode
+  :ensure t
+  :mode ".tf\\'")
+
+(use-package reformatter
+  :ensure t)
+
+(use-package go-ts-mode
+  :ensure t
+  :requires reformatter
+  :mode ".go\\'"
+  :config
+  (setq go-ts-mode-indent-offset 4)
+  (reformatter-define goimports
+    :program "goimports")
+  (reformatter-define gofmt
+    :program "gofmt")
+  :hook
+  (go-ts-mode . (lambda () (setq tab-width 4)))
+  (go-ts-mode . goimports-on-save-mode)
+  (go-ts-mode . gofmt-on-save-mode))
 
 (load custom-file)
 (put 'narrow-to-region 'disabled nil)
