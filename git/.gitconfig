@@ -6,17 +6,22 @@
 	editor = emacs
 [push]
 	default = matching
-
 [github]
 	user = kleinschmidt
 [filter "lfs"]
-	clean = git-lfs clean %f
-	smudge = git-lfs smudge %f
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
 	required = true
+	process = git-lfs filter-process
 [alias]
 	graph = log --oneline --decorate --graph
-
 [credential "https://github.com"]
 	helper = !/usr/bin/env gh auth git-credential
 [credential]
 	helper = cache
+[rerere]
+	enabled = true
+[url "https://github.com/"]
+	insteadOf = git@github.com:
+[pull]
+	rebase = false

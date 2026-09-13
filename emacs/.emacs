@@ -2,6 +2,7 @@
 (setq custom-file "~/.emacs.d/customized.el")
 
 ;; straight?
+(setq straight-use-package-by-default t)
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -18,22 +19,15 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;; melpa 
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(add-to-list 'package-archives
-             '("org" . "http://orgmode.org/elpa/"))
-(package-initialize)
-
 ;; local ~/emacs.d/lisp/
 ;; (let ((default-directory "~/.emacs.d/lisp/"))
 ;;   (normal-top-level-add-subdirs-to-load-path))
 (straight-use-package 'use-package)
 (eval-when-compile
   (require 'use-package))
+
+(use-package project)
+(use-package flymake)
 
 (tool-bar-mode -1)
 
@@ -46,8 +40,8 @@
                                       '((vertical-scroll-bars . nil)
                                         (horizontal-scroll-bars . nil)))))
 ;; remove scroll bars on first window to open
-(scroll-bar-mode 0)
-(menu-bar-mode 0)
+(scroll-bar-mode -1)
+(menu-bar-mode -1)
 
 ;; tabs = evil
 (setq-default indent-tabs-mode nil)
@@ -101,17 +95,15 @@
                '("update-pwd" (lambda (path) (setq default-directory path)))))
 
 ;; solarized theme
-(use-package solarized-theme
-  :ensure t)
+(use-package solarized-theme)
 
 ;; expand-region
 (use-package expand-region
-  :ensure t
-  :bind ("C-=" . er/expand-region))
+  :bind (("C-=" . er/expand-region)
+         ("C--" . er/contract-region)))
 
 ;; ivy
 (use-package ivy
-  :ensure t
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
@@ -134,16 +126,12 @@
          ("C-x C-f" . counsel-find-file)
          ("C-c k" . counsel-ag)))
 
-
 (use-package ace-jump-mode
-  :ensure t
-  :bind (("C-." . ace-jump-mode)
-         ("C-," . ace-jump-mode-pop-mark))
+  :bind (("C-." . ace-jump-mode))
   :config
   (ace-jump-mode-enable-mark-sync))
 
 (use-package ace-window
-  :ensure t
   :bind ("M-." . ace-window)
   :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
@@ -154,8 +142,32 @@
               ("M-." . ace-window)
               ("C-<backspace>" . term-send-backspace)))
 
+(use-package vterm
+  :bind (:map vterm-mode-map ("M-." . ace-window))
+  :config
+  (add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
+  (setq vterm-kill-buffer-on-exit nil))
+
+(defun project-shell-vterm ()
+  "Start an inferior vterm shell in the current project's root directory.
+If a buffer already exists for running a shell in the project's root,
+switch to it.  Otherwise, create a new shell buffer.
+With \\[universal-argument] prefix arg, create a new inferior shell buffer even
+if one already exists."
+  (interactive)
+  (require 'comint)
+  (let* ((default-directory (project-root (project-current t)))
+         (default-project-shell-name (project-prefixed-buffer-name "shell"))
+         (shell-buffer (get-buffer default-project-shell-name)))
+    (if (and shell-buffer (not current-prefix-arg))
+        (if (comint-check-proc shell-buffer)
+            (pop-to-buffer shell-buffer (bound-and-true-p display-comint-buffer-action))
+          (vterm shell-buffer))
+      (vterm (generate-new-buffer-name default-project-shell-name)))))
+
+(advice-add 'project-shell :override #'project-shell-vterm)
+
 (use-package multiple-cursors
-  :ensure t
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-c C-<" . mc/mark-all-like-this)
@@ -163,21 +175,19 @@
 
 
 ;; pdf-tools
-(use-package pdf-tools
-  :straight t
-  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
-  :init
-  (pdf-tools-install)
-  :config
-  (setq pdf-annot-list-listed-types '(caret file highlight squiggly strike-out text underline unknown))
-  :bind (:map pdf-view-mode-map
-              ("C-s" . isearch-forward)
-              ("C-r" . isearch-backward)
-              ("M-h" . pdf-annot-add-highlight-markup-annotation)))
+;; (use-package pdf-tools
+;;   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+;;   :init
+;;   (pdf-tools-install)
+;;   :config
+;;   (setq pdf-annot-list-listed-types '(caret file highlight squiggly strike-out text underline unknown))
+;;   :bind (:map pdf-view-mode-map
+;;               ("C-s" . isearch-forward)
+;;               ("C-r" . isearch-backward)
+;;               ("M-h" . pdf-annot-add-highlight-markup-annotation)))
 
 ;; ess
 (use-package ess
-  :ensure t
   :ensure julia-mode
   :init
   (require 'ess-site)
@@ -203,7 +213,6 @@
   :bind ("C-c C-m" . ess-pipe))
 
 (use-package stan-mode
-  :ensure t
   :requires ess)
 
 ;; TODO: once #308 is merged (or some other fix for #219/#287), install this
@@ -220,14 +229,51 @@
 ;; or:
 ;; (straight-use-package '(jupyter :local-repo "~/.emacs.d/lisp/emacs-jupyter/"))
 
-;; julia mode
-(use-package julia-mode
-  :ensure julia-repl
-  :ensure fill-column-indicator
-  :mode "\\.jl\\'"
+(use-package julia-vterm
+  :hook (julia-mode . julia-vterm-mode)
+  :bind (:map julia-vterm-mode-map
+              ("C-c C-s" . (lambda ()
+                             (interactive)
+                             (setq-default julia-vterm-session
+                              (completing-read "Session name: "
+                               (julia-vterm-repl-list-sessions)
+                               nil nil nil nil
+			       (julia-vterm-repl-session-name (julia-vterm-fellow-repl-buffer))))
+                             (setq julia-vterm-fellow-repl-buffer nil)))))
+
+(setq project-vc-extra-root-markers '("Project.toml" "JuliaProject.toml"))
+
+(use-package eglot
   :config
-  (add-hook 'julia-mode-hook 'julia-repl-mode)
-  (add-hook 'julia-mode-hook (lambda () (setq show-trailing-whitespace t))))
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (setq eglot-code-action-indications '(eldoc-hint)) ;; remove 'margin 
+  (add-to-list 'eglot-server-programs
+               '(((julia-mode :language-id "julia")
+                  (julia-ts-mode :language-id "julia"))
+                 "jetls"
+                 "serve"
+                 "--socket"
+                 :autoport)))
+
+;; (use-package eglot-jl
+;;   :straight (eglot-jl :type git :host github :repo "non-Jedi/eglot-jl"
+;;                       :fork (:host github
+;;                              :repo "kleinschmidt/eglot-jl"))
+;;   :requires eglot
+;;   ;; :hook (julia-mode . eglot-ensure)
+;;   :config (eglot-jl-init))
+
+;; julia mode
+;; (use-package julia-mode
+;;   :mode "\\.jl\\'"
+;;   :config
+;;   (add-hook 'julia-mode-hook (lambda () (setq show-trailing-whitespace t)))
+;;   (add-hook 'julia-mode-hook (lambda () (setq fill-column 92))))
+
+(use-package julia-ts-mode
+  :mode "\\.jl\\'"
+  :hook ((julia-ts-mode . (lambda () (setq show-trailing-whitespace t)))
+         (julia-ts-mode . (lambda () (setq fill-column 92)))))
 
 (define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
   "Julia Doctest mode")
@@ -241,18 +287,15 @@
     (adaptive-wrap-prefix-mode (if visual-line-mode 1 -1)))
   (add-hook 'visual-line-mode-hook 'my-activate-adaptive-wrap-prefix-mode))
 
-(use-package adaptive-wrap
-  :ensure t)
+(use-package adaptive-wrap)
 
 ;;; markdown mode
 (use-package markdown-mode
-  :ensure t
-  :pin melpa-stable
+  ;; :pin melpa-stable
   :config
   (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-  ;; (add-hook 'markdown-mode-hook 'auto-fill-mode)
   ;; predicate to prevent flyspell checking in code blocks (inline and
   ;; fenced)
   ;; http://emacs.stackexchange.com/questions/20230/how-to-make-flyspell-ignore-code-blocks-in-markdown
@@ -277,12 +320,10 @@
     (interactive)
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
-      (reftex-citation)))
-  :bind (:map markdown-mode-map
-              ("M-<right>" . markdown-demote)
-              ("M-<left>" . markdown-promote)
-              ("M-<up>" . markdown-move-up)
-              ("M-<down>" . markdown-move-down)))
+      (reftex-citation))))
+
+;; (use-package markdown-ts-mode
+;;   :mode ("\\.md\\'" . markdown-ts-mode))
 
 (defun grunt ()
   "Run grunt"
@@ -301,7 +342,6 @@
 
 ;; disable electric indent in js2-mode, and make default for .js
 (use-package js2-mode
-  :ensure t
   :mode "\\.js?\\'"
   :config
   (setq js2-basic-offset 2)
@@ -309,21 +349,31 @@
          ("C-c g" . grunt)))
 ;; (add-hook 'js2-mode-hook (lambda () (electric-indent-local-mode -1)))
 
-(use-package restclient
-  :ensure t)
+(use-package js
+  :bind (:map js-json-mode-map
+              ("M-." . ace-window)))
+
+(use-package json-mode
+  :mode "\\.json?\\'"
+  :config
+  (setq js-indent-level 2)
+  :bind (:map json-mode-map
+              ("M-." . ace-window)))
+
+(use-package graphql-mode
+  :mode "\\.graphql?\\'")
+
+(use-package restclient)
 
 (use-package ob-restclient
-  :ensure t
   :after restclient)
 
 
 ;; Bind magit-status to C-c i
 (use-package magit
-  :ensure t
   :bind (("C-c j" . magit-status)))
 
 (use-package forge
-  :ensure t
   :after magit)
 
 ;; =============================================================================
@@ -380,12 +430,10 @@ See `auth-source-search' for details on SPEC."
    "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
    "-o ControlMaster=auto -o ControlPersist=yes"))
 
-
 (add-to-list 'auth-sources 'gh-cli)
 ;; end gh-cli auth-source
 
 (use-package git-link
-  :ensure t
   :bind (("C-c g l" . git-link))
   :config
   (setq git-link-use-commit t))
@@ -419,7 +467,6 @@ See `auth-source-search' for details on SPEC."
                     "Documents/papers/library-clean.bib")))
 
 (use-package ivy-bibtex
-  :ensure t
   :config
   (setq bibtex-completion-bibliography
         '("~/Documents/papers/zotero.bib"))
@@ -433,7 +480,6 @@ See `auth-source-search' for details on SPEC."
 
 ;; Use latexmk with auctex (package installed via MELPA)
 (use-package auctex-latexmk
-  :ensure t
   :config
   (auctex-latexmk-setup))
 
@@ -441,13 +487,11 @@ See `auth-source-search' for details on SPEC."
 ;; (require 'matlab-mode)
 
 ;; wc-mode
-(use-package wc-mode
-  :ensure t)
+(use-package wc-mode)
 
 
 ;; web-mode/swig
 (use-package web-mode
-  :ensure t
   :mode ("\\.html?\\'"
          "\\.swig\\'")
   :config
@@ -457,11 +501,9 @@ See `auth-source-search' for details on SPEC."
 
 ;; polymode for r markdown
 (use-package polymode
-  :ensure t
   :mode (("\\.org\\'" . org-mode)))
 
 (use-package poly-markdown
-  :ensure t
   ;; poly-markdown-mode auto-detects chunk types.
   :mode (("\\.jmd\\'" . poly-markdown-mode)
          ("\\.Rmd" . poly-markdown-mode)))
@@ -503,7 +545,6 @@ See `auth-source-search' for details on SPEC."
 
 ;; org mode
 (use-package org
-  :ensure org-bullets
   :ensure org-plus-contrib
   :ensure counsel
   :config
@@ -665,7 +706,6 @@ See `auth-source-search' for details on SPEC."
 ;; copy over PATH variable from the shell
 
 (use-package exec-path-from-shell
-  :ensure t
   :config
   (setq exec-path-from-shell-check-startup-files nil)
   (exec-path-from-shell-initialize)
@@ -674,14 +714,16 @@ See `auth-source-search' for details on SPEC."
                                         "LOLCOMMITS_STEALTH"
                                         "LOLCOMMITS_DEVICE"
                                         "AWS_PROFILE"
-                                        "AWS_DEFAULT_REGION")))
+                                        "AWS_DEFAULT_REGION"
+                                        "JULIA_PKG_SERVER"
+                                        "JULIA_PKG_SERVER_REGISTRY_PREFERENCE"
+                                        "JULIA_PKG_USE_CLI_GIT")))
 
 
 ;; auto-follow compilation buffer, stopping at first error
 (setq compilation-scroll-output 'first-error)
 
 (use-package pkgbuild-mode
-  :ensure t
   :mode "PKGBUILD\\'")
 
 ;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
@@ -695,64 +737,77 @@ See `auth-source-search' for details on SPEC."
 
 (define-key global-map "\M-Q" 'unfill-paragraph)
 
+(use-package flymake-actionlint
+  :straight (:host github :repo "kleinschmidt/flymake-actionlint")
+  :hook (yaml-mode . flymake-actionlint-action-load-when-actions-file))
+
+(use-package flymake-shellcheck
+  :hook (sh-mode . flymake-shellcheck-load))
+
 (use-package yaml-mode
-  :ensure t
-  :mode "\\.[yY][aA]?[mM][lL]\\'")
-
-(use-package projectile
-  :ensure t)
-
-(use-package counsel-projectile
-  :ensure t
-  :demand t
+  :mode "\\.[yY][aA]?[mM][lL]\\'"
   :config
-  (counsel-projectile-mode)
-  :bind ("C-c p" . projectile-command-map))
+  (add-hook 'yaml-mode-hook (lambda () (auto-fill-mode -1))))
+  ;; (add-hook 'yaml-mode-hook #'flymake-actionlint-action-load-when-actions-file))
+
+;; (use-package yaml-ts-mode
+;;   :mode "\\.[yY][aA]?[mM][lL]\\'"
+;;   :config
+;;   (add-hook 'yaml-ts-mode-hook (lambda () (auto-fill-mode -1))))
+
+;; (use-package projectile)
+
+;; (use-package counsel-projectile
+;;   :demand t
+;;   :config
+;;   (counsel-projectile-mode)
+;;   :bind ("C-c p" . projectile-command-map))
 
 (use-package ag
-  :ensure t
   :requires wgrep-ag
   :bind (("C-c K" . ag)
          :map ag-mode-map
          ("C-c C-p" . wgrep-change-to-wgrep-mode)))
 
-(use-package wgrep-ag
-  :ensure t)
+(use-package wgrep-ag)
 (use-package wgrep
-  :ensure t)
+  :config
+  (setq wgrep-auto-save-buffer t))
 
-(use-package color-theme-sanityinc-tomorrow
-  :ensure t)
+(use-package color-theme-sanityinc-tomorrow)
 
-(use-package color-theme-sanityinc-solarized
-  :ensure t)
+(use-package color-theme-sanityinc-solarized)
 
-(use-package csv-mode
-  :ensure t)
+(use-package auto-dark
+  :custom
+  (auto-dark-themes '((solarized-dark) (solarized-light)))
+  :init (auto-dark-mode))
+
+(use-package csv-mode)
 
 (use-package fill-column-indicator
-  :ensure t
+  :hook (prog-mode . display-fill-column-indicator-mode)
   :config
   (setq fci-rule-width 3))
 
 (use-package terraform-mode
-  :ensure t
   :mode ("\\.tf\\'")
+  :custom (terraform-format-on-save t)
   :hook
-  (terraform-mode . terraform-format-on-save-mode))
+  (terraform-mode . terraform-format-on-save-mode)
+  (terraform-mode . eglot-ensure))
 
-(use-package dockerfile-mode
-  :ensure t
-  :mode ("[Dd]ockerfile"))
+(use-package dockerfile-ts-mode
+  :mode ("[Dd]ockerfile")
+  :hook (dockerfile-ts-mode . eglot-ensure))
 
-(use-package olivetti
-  :ensure t)
+(use-package olivetti)
 
-(use-package reformatter
-  :ensure t)
+(use-package reformatter)
+
+(use-package bazel)
 
 (use-package go-ts-mode
-  :ensure t
   :requires reformatter
   :mode ".go\\'"
   :config
@@ -766,8 +821,7 @@ See `auth-source-search' for details on SPEC."
   (go-ts-mode . goimports-on-save-mode)
   (go-ts-mode . gofmt-on-save-mode))
 
-(use-package protobuf-mode
-  :ensure t)
+(use-package protobuf-mode)
 
 ;; (defconst my-cc-style
 ;;   '("gnu"
@@ -778,11 +832,9 @@ See `auth-source-search' for details on SPEC."
   (c-set-offset 'innamespace [0]))
 (add-hook 'c++-mode-hook 'no-namespace-indent)
 
-(use-package cython-mode
-  :ensure t)
+(use-package cython-mode)
 
 (use-package clang-format
-  :ensure t
   :config
   (defun my-clang-format (arg)
     (interactive "P")
@@ -791,25 +843,43 @@ See `auth-source-search' for details on SPEC."
       (clang-format-buffer)))
   :bind (("C-c f" . my-clang-format)))
 
-(use-package vterm
-    :ensure t)
+(use-package python-mode
+  :config
+  (reformatter-define black-format
+    :program "black"
+    :args '("-"))
+  :hook
+  (python-mode-hook . black-format-on-save-mode))
 
 (load custom-file)
 (put 'narrow-to-region 'disabled nil)
+
+(use-package typescript-ts-mode
+  :mode (("\\.ts\\'" . typescript-ts-mode)
+         ("\\.tsx\\'" . tsx-ts-mode))
+  :config
+  (add-to-list 'eglot-server-programs '(typescript-mode . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(tsx-mode . ("typescript-language-server" "--stdio")))
+  )
 
 (setq treesit-language-source-alist
    '((bash "https://github.com/tree-sitter/tree-sitter-bash")
      (cmake "https://github.com/uyha/tree-sitter-cmake")
      (css "https://github.com/tree-sitter/tree-sitter-css")
      (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (go "https://github.com/tree-sitter/tree-sitter-go" "v0.19.1")
+     (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
      (html "https://github.com/tree-sitter/tree-sitter-html")
      (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
      (json "https://github.com/tree-sitter/tree-sitter-json")
      (make "https://github.com/alemuller/tree-sitter-make")
-     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown" "split_parser" "tree-sitter-markdown/src")
+     (markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown" "split_parser" "tree-sitter-markdown-inline/src")
      (python "https://github.com/tree-sitter/tree-sitter-python")
      (toml "https://github.com/tree-sitter/tree-sitter-toml")
      (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+     (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")))
+
+(use-package el2org)

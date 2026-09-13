@@ -55,3 +55,12 @@ Thumbs.db
 *.fls
 *.log
 *.run.xml
+
+# emacs arcana #
+################
+.dir-locals.el
+
+# my own notes #
+################
+_notes*.md
+**/.claude/settings.local.json
