@@ -74,7 +74,7 @@ export AWS_DEFAULT_REGION=us-east-2
 
 export AWS_PROFILE="dkleinschmidt"
 
-if [ -f ~/clipboard.zsh ]; then
+if [[ -f "$HOME/clipboard.zsh" ]; then
     source ~/clipboard.zsh
 fi
 
@@ -82,7 +82,7 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] && [[ -f "${HOME}/vterm.zsh" ]]; then
     source ~/vterm.zsh
 fi
 
-if [ -d "${HOME}/go/bin" ]; then
+if [[ -d "${HOME}/go/bin" ]]; then
     export PATH="${HOME}/go/bin:${PATH}"
 fi
 
@@ -90,26 +90,29 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-eval "$(direnv hook zsh)"
+command -v direnv >/dev/null && eval "$(direnv hook zsh)"
 
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-
+if [[ -f "/opt/homebrew/opt/asdf/libexec/asdf.sh" ]]; then
+    . "/opt/homebrew/opt/asdf/libexec/asdf.sh"
+fi
 # pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+PYENV_ROOT="$HOME/.pyenv"
+if [[ -d "$PYENV_ROOT" ]]; then
+    export PYENV_ROOT
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
 
-# poetry
-export PATH="/Users/dkleinschmidt/.local/bin:$PATH"
-
-export PATH="${HOME}/.docker/bin:${PATH}"
-
-export PATH="${HOME}/.julia/bin:${PATH}"
+for bin in .local/bin .docker/bin /julia/bin; do
+    [[ -d "$HOME/$bin" ]] && export PATH="$HOME/$bin:$PATH"
+done
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/dkleinschmidt/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
+if [[ -f "$HOME/.docker/completions" ]]; then
+    fpath=("$HOME/.docker/completions" $fpath)
+    autoload -Uz compinit
+    compinit
+fi
 # End of Docker CLI completions
 
 if [[ -n $(command -v gem) ]]; then
