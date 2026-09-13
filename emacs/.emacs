@@ -212,10 +212,10 @@
 ;; gh repo clone nnicandro/emacs-jupyter && cd emacs-jupyter && git checkout origin/fix-219
 
 ;; jupyter integration (mostly for julia)
-(use-package jupyter
-  :straight t
-  :config
-  (setq jupyter-repl-echo-eval-p t))
+;; (use-package jupyter
+;;   :straight t
+;;   :config
+;;   (setq jupyter-repl-echo-eval-p t))
 
 ;; or:
 ;; (straight-use-package '(jupyter :local-repo "~/.emacs.d/lisp/emacs-jupyter/"))
@@ -470,24 +470,26 @@ See `auth-source-search' for details on SPEC."
 (defun mac-switch-meta nil
   "switch meta between Option and Command"
   (interactive)
-  (if (eq mac-option-modifier nil)
-      (progn
-        (setq mac-option-modifier 'meta)
-        (setq mac-command-modifier 'hyper)
-        (message "Option is meta")
-        )
-    (progn
-      (setq mac-option-modifier nil)
-      (setq mac-command-modifier 'meta)
-      (message "Option is not meta")
-      )
-    )
-  )
-(global-set-key (kbd "C-;") 'mac-switch-meta)
+  (if (string-equal system-type "darwin")
+      (if (eq mac-option-modifier nil)
+          (progn
+            (setq mac-option-modifier 'meta)
+            (setq mac-command-modifier 'hyper)
+            (message "Option is meta")
+            )
+        (progn
+          (setq mac-option-modifier nil)
+          (setq mac-command-modifier 'meta)
+          (message "Option is not meta")))))
+(global-set-key (kbd "C-M-;") 'mac-switch-meta)
 
-;; set option to meta by default
+;; set command to meta by default and alt to hyper (Mac)
 (setq mac-option-modifier 'hyper)
 (setq mac-command-modifier 'meta)
+
+;; set command to meta by default and alt to hyper (Linux)
+(setq x-super-keysym 'meta)
+(setq x-alt-keysym 'hyper)
 
 ;; mac-style bindings for new/close window (frame)
 (global-set-key (kbd "H-n") 'make-frame)
@@ -506,8 +508,8 @@ See `auth-source-search' for details on SPEC."
   :ensure counsel
   :config
   (setq org-confirm-babel-evaluate nil)
-  (add-to-list 'org-structure-template-alist
-               '("jl" . "src jupyter-julia"))
+  ;; (add-to-list 'org-structure-template-alist
+  ;;              '("jl" . "src jupyter-julia"))
   (let* ((headline `(:inherit default :weight bold :height 1.0)))
     (custom-theme-set-faces 'user
                             `(org-level-1 ((t (,@headline))))
@@ -610,7 +612,7 @@ See `auth-source-search' for details on SPEC."
    'org-babel-load-languages
    '((emacs-lisp . t)
      (julia . t)
-     (jupyter . t)
+     ;; (jupyter . t)
      (restclient . t)))
   (defun org-todo-buffer ()
     "Create new indirect buffer with sparse tree of undone TODO items"
