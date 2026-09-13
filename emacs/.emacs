@@ -31,7 +31,6 @@
 ;; local ~/emacs.d/lisp/
 ;; (let ((default-directory "~/.emacs.d/lisp/"))
 ;;   (normal-top-level-add-subdirs-to-load-path))
-
 (straight-use-package 'use-package)
 (eval-when-compile
   (require 'use-package))
@@ -62,6 +61,13 @@
 ;; show column/line numbers
 (setq column-number-mode t)
 (setq line-number-mode t)
+
+;; prefer vertical splits
+(setq split-width-threshold 160)
+(setq split-height-threshold nil)
+
+;; use zap-up-to-char instead of zap-to-char
+(global-set-key (kbd "M-z") 'zap-up-to-char)
 
 ;; compile with C-x C-m
 (global-set-key (kbd "C-x C-m") 'compile)
@@ -113,7 +119,7 @@
   (setq magit-completing-read-function 'ivy-completing-read)
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-re-builders-alist
-	;; allow input not in order
+        ;; allow input not in order
         '((t   . ivy--regex-ignore-order))))
 
 (use-package swiper
@@ -127,7 +133,7 @@
   :bind (("M-x" . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
          ("C-c k" . counsel-ag)))
-  
+
 
 (use-package ace-jump-mode
   :ensure t
@@ -202,7 +208,7 @@
 
 ;; TODO: once #308 is merged (or some other fix for #219/#287), install this
 ;; from MELPA again, but for now install into .emacs.d/lisp/ via
-;; 
+;;
 ;; gh repo clone nnicandro/emacs-jupyter && cd emacs-jupyter && git checkout origin/fix-219
 
 ;; jupyter integration (mostly for julia)
@@ -220,7 +226,8 @@
   :ensure fill-column-indicator
   :mode "\\.jl\\'"
   :config
-  (add-hook 'julia-mode 'jupyter-repl-interaction-mode))
+  (add-hook 'julia-mode-hook 'julia-repl-mode)
+  (add-hook 'julia-mode-hook (lambda () (setq show-trailing-whitespace t))))
 
 (define-derived-mode jldoctest-mode julia-mode "Julia Doctest"
   "Julia Doctest mode")
@@ -233,6 +240,9 @@
     "Toggle `visual-line-mode' and `adaptive-wrap-prefix-mode' simultaneously."
     (adaptive-wrap-prefix-mode (if visual-line-mode 1 -1)))
   (add-hook 'visual-line-mode-hook 'my-activate-adaptive-wrap-prefix-mode))
+
+(use-package adaptive-wrap
+  :ensure t)
 
 ;;; markdown mode
 (use-package markdown-mode
@@ -251,22 +261,22 @@
     ;; (point) is next character after the word, need to check 1 back
     (let ((f (get-text-property (- (point) 1) 'face)))
       (not (memq f '(markdown-pre-face
-		     markdown-inline-code-face
-		     markdown-language-keyword-face)))))
+                     markdown-inline-code-face
+                     markdown-language-keyword-face)))))
   (put 'markdown-mode 'flyspell-mode-predicate 'markdown-mode-flyspell-verify)
   ;; reftex in markdown mode
   (defvar markdown-cite-format)
   (setq markdown-cite-format
-	'(
-	  (?\C-m . "[@%l]")
-	  (?p . "[@%l]")
-	  (?t . "@%l")
-	  )
-	)
+        '(
+          (?\C-m . "[@%l]")
+          (?p . "[@%l]")
+          (?t . "@%l")
+          )
+        )
   (defun markdown-reftex-citation ()
     (interactive)
     (let ((reftex-cite-format markdown-cite-format)
-	  (reftex-cite-key-separator "; @"))
+          (reftex-cite-key-separator "; @"))
       (reftex-citation)))
   :bind (:map markdown-mode-map
               ("M-<right>" . markdown-demote)
@@ -296,7 +306,7 @@
   :config
   (setq js2-basic-offset 2)
   :bind (:map js2-mode-map
-	 ("C-c g" . grunt)))
+         ("C-c g" . grunt)))
 ;; (add-hook 'js2-mode-hook (lambda () (electric-indent-local-mode -1)))
 
 (use-package restclient
@@ -363,8 +373,22 @@ See `auth-source-search' for details on SPEC."
     (add-hook 'auth-source-backend-parser-functions #'auth-source-ghcli-backend-parse)
   (advice-add 'auth-source-backend-parse :before-until #'auth-source-ghcli-backend-parse))
 
+;; Set up TRAMP to re-use existing SSH connections to servers
+(customize-set-variable
+ 'tramp-ssh-controlmaster-options
+ (concat
+   "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
+   "-o ControlMaster=auto -o ControlPersist=yes"))
+
+
 (add-to-list 'auth-sources 'gh-cli)
 ;; end gh-cli auth-source
+
+(use-package git-link
+  :ensure t
+  :bind (("C-c g l" . git-link))
+  :config
+  (setq git-link-use-commit t))
 
 ;; AUCTeX fontification
 ;; apacite citation macros
@@ -405,7 +429,7 @@ See `auth-source-search' for details on SPEC."
    'ivy-bibtex
    '(("O" ivy-bibtex-open-pdf "Open PDF (if present)")))
   :bind ("M-[" . ivy-bibtex))
-  
+
 
 ;; Use latexmk with auctex (package installed via MELPA)
 (use-package auctex-latexmk
@@ -424,11 +448,11 @@ See `auth-source-search' for details on SPEC."
 ;; web-mode/swig
 (use-package web-mode
   :ensure t
-  :mode ("\\.html?\\'" 
-	 "\\.swig\\'")
+  :mode ("\\.html?\\'"
+         "\\.swig\\'")
   :config
   (setq web-mode-engines-alist
-	'(("django" . "\\.html?\\'"))))
+        '(("django" . "\\.html?\\'"))))
 
 
 ;; polymode for r markdown
@@ -440,30 +464,30 @@ See `auth-source-search' for details on SPEC."
   :ensure t
   ;; poly-markdown-mode auto-detects chunk types.
   :mode (("\\.jmd\\'" . poly-markdown-mode)
-	 ("\\.Rmd" . poly-markdown-mode)))
+         ("\\.Rmd" . poly-markdown-mode)))
 
 ;; mac switch meta key
-(defun mac-switch-meta nil 
+(defun mac-switch-meta nil
   "switch meta between Option and Command"
   (interactive)
   (if (eq mac-option-modifier nil)
       (progn
-	(setq mac-option-modifier 'meta)
-	(setq mac-command-modifier 'hyper)
+        (setq mac-option-modifier 'meta)
+        (setq mac-command-modifier 'hyper)
         (message "Option is meta")
-	)
-    (progn 
+        )
+    (progn
       (setq mac-option-modifier nil)
       (setq mac-command-modifier 'meta)
       (message "Option is not meta")
       )
     )
   )
-(global-set-key (kbd "C-;") 'mac-switch-meta) 
+(global-set-key (kbd "C-;") 'mac-switch-meta)
 
 ;; set option to meta by default
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'hyper)
+(setq mac-option-modifier 'hyper)
+(setq mac-command-modifier 'meta)
 
 ;; mac-style bindings for new/close window (frame)
 (global-set-key (kbd "H-n") 'make-frame)
@@ -496,7 +520,7 @@ See `auth-source-search' for details on SPEC."
                             `(org-level-8 ((t (,@headline))))
                             )
     )
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))  
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
   (setq org-hide-emphasis-markers nil)
   (setq org-directory "~/work/notes/")
   (setq org-capture-templates
@@ -526,7 +550,7 @@ See `auth-source-search' for details on SPEC."
     (call-interactively 'org-store-link)
     (org-capture nil "i"))
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "NOPE(x)" "DONE(d)")))
+        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)" "NOPE(x)")))
   (setq org-refile-targets
         '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")
           ("agenda.org" :regexp . "\\(Past\\|Future\\)")
@@ -546,14 +570,14 @@ See `auth-source-search' for details on SPEC."
   (setq org-agenda-compact-blocks t)
   (setq org-agenda-custom-commands
         '(("g" "Get Things Done (GTD)"
-           
+
            (;; scheduled things for day
             (agenda ""
                     ((org-agenda-skip-function
                       '(org-agenda-skip-entry-if 'deadline 'regexp ":@canceled"))
                      (org-deadline-warning-days 0)
                      (org-agenda-span 1)))
-            ;; list of next tasks 
+            ;; list of next tasks
             (todo "NEXT"
                   ((org-agenda-skip-function
                     '(org-agenda-skip-entry-if 'deadline))
@@ -565,7 +589,7 @@ See `auth-source-search' for details on SPEC."
                      (org-agenda-format-date "")
                      (org-deadline-warning-days 7)
                      (org-agenda-skip-function
-                      '(org-agenda-skip-entry-if 'regexp "\\* DONE"))
+                      '(org-agenda-skip-entry-if 'regexp "\\* \\(DONE\\|NOPE\\)"))
                      (org-agenda-overriding-header "Deadlines")))
             (tags-todo "inbox"
                        ((org-agenda-prefix-format "  %?-12t% s")
@@ -646,7 +670,9 @@ See `auth-source-search' for details on SPEC."
   (exec-path-from-shell-copy-envs (list "LOLCOMMITS_DELAY"
                                         "LOLCOMMITS_FORK"
                                         "LOLCOMMITS_STEALTH"
-                                        "LOLCOMMITS_DEVICE")))
+                                        "LOLCOMMITS_DEVICE"
+                                        "AWS_PROFILE"
+                                        "AWS_DEFAULT_REGION")))
 
 
 ;; auto-follow compilation buffer, stopping at first error
@@ -656,7 +682,7 @@ See `auth-source-search' for details on SPEC."
   :ensure t
   :mode "PKGBUILD\\'")
 
-;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph    
+;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
 (defun unfill-paragraph (&optional region)
   "Takes a multi-line paragraph and makes it into a single line of text."
   (interactive (progn (barf-if-buffer-read-only) '(t)))
@@ -709,7 +735,16 @@ See `auth-source-search' for details on SPEC."
 
 (use-package terraform-mode
   :ensure t
-  :mode ".tf\\'")
+  :mode ("\\.tf\\'")
+  :hook
+  (terraform-mode . terraform-format-on-save-mode))
+
+(use-package dockerfile-mode
+  :ensure t
+  :mode ("[Dd]ockerfile"))
+
+(use-package olivetti
+  :ensure t)
 
 (use-package reformatter
   :ensure t)
@@ -729,5 +764,50 @@ See `auth-source-search' for details on SPEC."
   (go-ts-mode . goimports-on-save-mode)
   (go-ts-mode . gofmt-on-save-mode))
 
+(use-package protobuf-mode
+  :ensure t)
+
+;; (defconst my-cc-style
+;;   '("gnu"
+;;     (c-offsets-alist . ((innamespace . [0])))))
+
+;; (c-add-style "my-cc-style" my-cc-style)
+(defun no-namespace-indent ()
+  (c-set-offset 'innamespace [0]))
+(add-hook 'c++-mode-hook 'no-namespace-indent)
+
+(use-package cython-mode
+  :ensure t)
+
+(use-package clang-format
+  :ensure t
+  :config
+  (defun my-clang-format (arg)
+    (interactive "P")
+    (if arg
+        (clang-format-region)
+      (clang-format-buffer)))
+  :bind (("C-c f" . my-clang-format)))
+
+(use-package vterm
+    :ensure t)
+
 (load custom-file)
 (put 'narrow-to-region 'disabled nil)
+
+(setq treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (python "https://github.com/tree-sitter/tree-sitter-python")
+     (toml "https://github.com/tree-sitter/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))

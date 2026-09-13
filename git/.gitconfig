@@ -17,6 +17,6 @@
 	graph = log --oneline --decorate --graph
 
 [credential "https://github.com"]
-	helper = !gh auth git-credential
+	helper = !/usr/bin/env gh auth git-credential
 [credential]
 	helper = cache
