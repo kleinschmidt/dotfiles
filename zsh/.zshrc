@@ -65,8 +65,8 @@ fi
 if [[ -f "$HOME/.zshrc_local" ]]; then
     source "$HOME/.zshrc_local"
 fi
-export WANDB_API_KEY="op://Private/wandb api key/password"
-[[ /usr/bin/kubectl ]] && source <(kubectl completion zsh)
+
+command -v /usr/bin/kubectl >/dev/null && source <(kubectl completion zsh)
 alias k=kubectl
 
 export AWS_REGION=us-east-2
@@ -74,7 +74,7 @@ export AWS_DEFAULT_REGION=us-east-2
 
 export AWS_PROFILE="dkleinschmidt"
 
-if [[ -f "$HOME/clipboard.zsh" ]; then
+if [[ -f "$HOME/clipboard.zsh" ]]; then
     source ~/clipboard.zsh
 fi
 
